@@ -1,0 +1,10 @@
+bart
+homer
+lisa
+marge
+maggie
+snowball 
+santa
+patty
+selma
+grampa
