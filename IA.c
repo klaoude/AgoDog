@@ -97,11 +97,11 @@ void UpdateNodes(unsigned char* data)
 
 	case 64:
 		printf("Game area size\n");
-		float a,b,c,d;
-		memcpy(&a, payload+1, sizeof(float));
-		memcpy(&b, payload+1+sizeof(float), sizeof(float));
-		memcpy(&c, payload+1+2*sizeof(float), sizeof(float));
-		memcpy(&d, payload+1+3*sizeof(float), sizeof(float));
+		double a,b,c,d;
+		memcpy(&a, payload+1, 8);
+		memcpy(&b, payload+1+8, 8);
+		memcpy(&c, payload+1+2*8, 8);
+		memcpy(&d, payload+1+3*8, 8);
 		printf("(%f, %f, %f, %f)\n", a, b, c, d);
 		break;
 

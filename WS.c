@@ -81,19 +81,23 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 
 		unsigned char start[5] = {0xfe, 13, 0, 0, 0};
 		sendCommand(wsi, start, 5);
-
-		char* name = BotName;
-		unsigned int nameLength = strlen(name) + 1;
-		char* namePacket = malloc(nameLength + 1);
-		namePacket[0] = 0;
-		memcpy(namePacket + 1, name, nameLength);
-		sendCommand(wsi, namePacket, nameLength + 1);
-
-        if(strcmp(BotName, "spectator") == 0)
-        {
-            unsigned char spectator[1] = {1};
-            sendCommand(wsi, spectator, 1);
-        }
+		
+		char* name;
+	
+        	if(strcmp(BotName, "spectator") == 0)
+        	{
+            		unsigned char spectator[1] = {1};
+            		sendCommand(wsi, spectator, 1);
+        	}
+		else
+		{
+			name = BotName;
+			unsigned int nameLength = strlen(name) + 1;
+			char* namePacket = malloc(nameLength + 1);
+			namePacket[0] = 0;
+			memcpy(namePacket + 1, name, nameLength);
+			sendCommand(wsi, namePacket, nameLength + 1);
+		}
 
 		printf("[DEBUG] Conection etablie ! (%s)\n", name);
 
