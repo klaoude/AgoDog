@@ -54,6 +54,8 @@ typedef struct NodeStack
 	struct NodeStack* next;
 } NodeStack;
 
+Vec2 GetNodePos(Node* node);
+
 void NodeStack_push(NodeStack** list, Node* elem);
 void NodeStack_clear(NodeStack* list);
 Node* NodeStack_get(NodeStack* list, unsigned int id);
@@ -65,5 +67,8 @@ void NodeStack_update(NodeStack** list, Node* elem);
 void printHex(char* data, size_t size);
 void debugNode(Node* node);
 void printNodeStack(NodeStack* ns);
+
+double max(double a, double b);
+double min(double a, double b);
 
 #endif

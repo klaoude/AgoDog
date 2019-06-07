@@ -84,11 +84,13 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 		
 		char* name;
 	
-        	if(strcmp(BotName, "spectator") == 0)
-        	{
-				unsigned char spectator[1] = {1};
-				sendCommand(wsi, spectator, 1);
-        	}
+		if(strcmp(BotName, "spectator") == 0)
+		{
+			unsigned char spectator[1] = {1};
+			sendCommand(wsi, spectator, 1);
+
+			isSpectator = 1;
+		}
 		else
 		{
 			name = BotName;
@@ -97,6 +99,8 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 			namePacket[0] = 0;
 			memcpy(namePacket + 1, name, nameLength);
 			sendCommand(wsi, namePacket, nameLength + 1);
+
+			isSpectator = 0;
 		}
 
 		printf("[DEBUG] Conection etablie ! (%s)\n", name);
@@ -116,8 +120,15 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 
 			if (lws_is_final_fragment(wsi)) 
 			{
-                //printHex(rbuf, offset);
+                printHex(rbuf, offset);
                 IARecv(rbuf);
+
+				Clear();
+
+				Draw();
+
+				Loop(&forceExit);
+
 				offset = 0;
 			}
 		} 
@@ -154,6 +165,7 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 int connectTo(char* ip, int port, char* name)
 {
 	InitIA();
+	InitUI();
 
     struct lws_context_creation_info info;
 	struct lws_client_connect_info i;

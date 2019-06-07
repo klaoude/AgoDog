@@ -5,10 +5,11 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
 
-//#include "Utils.h"
+#include "Utils.h"
+#include "IA.h"
 
-#define WINDOW_WIDTH 1024
-#define WINDOW_HEIGTH 594
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGTH 1080
 
 typedef struct Color
 {

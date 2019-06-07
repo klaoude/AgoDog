@@ -33,6 +33,11 @@ void UpdateNodes(unsigned char* data)
 			node->name = malloc(nameLength+1); //on aloue la memoire pour le nom
 			strcpy(node->name, data + startNodePos + (i+1)*NodeSize + totalNameLength); //on copie le nom
 			totalNameLength += nameLength+1;//on augment la taille total des noms
+		
+			if(strcmp(node->name, BotName) == 0) //si la cellule est noter bot
+			{
+				player = node;
+			}
 		}
 		else if(node->flags&0x1)
 			node->type = VIRUS;
@@ -40,6 +45,8 @@ void UpdateNodes(unsigned char* data)
 			node->type = FOOD;
 		
 		NodeStack_update(&nodes, node);
+
+		debugNode(node);
 
 		memcpy(&end, data + startNodePos + (i+1)*(NodeSize) + totalNameLength, sizeof(unsigned int)); //la nouvelle fin (check si c'est 0)
 		i++;

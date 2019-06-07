@@ -1,5 +1,14 @@
 #include "Utils.h"
 
+Vec2 GetNodePos(Node* node)
+{
+	Vec2 ret;
+	ret.x = node->x;
+	ret.y = node->y;
+
+	return ret;
+}
+
 void NodeStack_push(NodeStack** list, Node* elem)
 {
 	NodeStack* new = malloc(sizeof(NodeStack));
@@ -148,3 +157,6 @@ void printNodeStack(NodeStack* ns)
     }
     printf("\n");
 }
+
+double max(double a, double b) { return (a > b) ? a : b; }
+double min(double a, double b) { return (a > b) ? b : a; }

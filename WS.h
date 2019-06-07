@@ -3,7 +3,9 @@
 
 #include <libwebsockets.h>
 #include <signal.h>
+
 #include "Utils.h"
+#include "UI.h"
 
 #define MAXLEN 20000
 
@@ -14,8 +16,6 @@ int sendCommand(struct lws *wsi, unsigned char *buf, unsigned int len);
 int connectTo(char* ip, int port, char* name);
 
 int forceExit;
-
-char* BotName;
 
 typedef struct s_packet 
 {
