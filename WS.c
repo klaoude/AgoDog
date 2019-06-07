@@ -1,9 +1,9 @@
 #include "WS.h"
 #include "IA.h"
 
-t_packet* packetList = NULL; 
+t_packet* packetList = NULL;
 
-struct lws_protocols protocols[] = { { "ogar_protocol", callbackOgar, 0, 20 }, { NULL, NULL, 0, 0 } }; 
+struct lws_protocols protocols[] = { { "ogar_protocol", callbackOgar, 0, 20 }, { NULL, NULL, 0, 0 } };
 
 void sighandler(int sig)
 {
@@ -14,7 +14,7 @@ t_packet *allocatePacket()
 {
 	t_packet *tmp;
 
-	if ((tmp = malloc(sizeof(t_packet))) == NULL ) 
+	if ((tmp = malloc(sizeof(t_packet))) == NULL )
 		return NULL;
 
 	memset(tmp, 0, sizeof(t_packet));
@@ -26,10 +26,10 @@ int sendCommand(struct lws *wsi, unsigned char *buf, unsigned int len)
 {
 	t_packet *tmp, *list = packetList;
 
-	if (len > MAXLEN ) 
+	if (len > MAXLEN )
 		return -1;
 
-	if ((tmp = allocatePacket()) == NULL ) 
+	if ((tmp = allocatePacket()) == NULL )
 		return -1;
 
 	memcpy(&(tmp->buf)[LWS_PRE], buf, len);
@@ -37,7 +37,7 @@ int sendCommand(struct lws *wsi, unsigned char *buf, unsigned int len)
 
 	if (packetList == NULL )
 		packetList = tmp;
-	else 
+	else
 	{
 		while (list && list->next)
 			list = list->next;
@@ -55,7 +55,7 @@ int writePacket(struct lws *wsi)
 	t_packet *tmp = packetList;
 	int ret;
 
-	if (packetList == NULL ) 
+	if (packetList == NULL )
 		return 0;
 
 	packetList = tmp->next;
@@ -71,19 +71,19 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 	static unsigned int offset = 0;
 	static unsigned char rbuf[MAXLEN];
 
-	switch (reason) 
+	switch (reason)
 	{
 	case LWS_CALLBACK_CLIENT_ESTABLISHED:
 		fprintf(stderr, "ogar: LWS_CALLBACK_CLIENT_ESTABLISHED\n");
-		
-        unsigned char connect[5] = {0xff, 0, 0, 0, 0};
+
+    unsigned char connect[5] = {0xff, 0, 0, 0, 0};
 		sendCommand(wsi, connect, 5);
 
 		unsigned char start[5] = {0xfe, 13, 0, 0, 0};
 		sendCommand(wsi, start, 5);
-		
+
 		char* name;
-	
+
 		if(strcmp(BotName, "spectator") == 0)
 		{
 			unsigned char spectator[1] = {1};
@@ -108,20 +108,20 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 		break;
 
  	case LWS_CALLBACK_CLIENT_WRITEABLE:
-		if (writePacket(wsi) < 0 ) 
+		if (writePacket(wsi) < 0 )
 			forceExit = 1;
 		break;
 
 	case LWS_CALLBACK_CLIENT_RECEIVE:
-		if (offset + len < MAXLEN ) 
+		if (offset + len < MAXLEN )
 		{
 			memcpy(rbuf+offset, in, len);
 			offset += len;
 
-			if (lws_is_final_fragment(wsi)) 
+			if (lws_is_final_fragment(wsi))
 			{
-                printHex(rbuf, offset);
-                IARecv(rbuf);
+        printHex(rbuf, offset);
+        IARecv(rbuf);
 
 				Clear();
 
@@ -131,8 +131,8 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 
 				offset = 0;
 			}
-		} 
-		else 
+		}
+		else
 		{
 			offset = MAXLEN;
 		 	if (lws_is_final_fragment(wsi))
@@ -167,7 +167,7 @@ int connectTo(char* ip, int port, char* name)
 	InitIA();
 	InitUI();
 
-    struct lws_context_creation_info info;
+  struct lws_context_creation_info info;
 	struct lws_client_connect_info i;
 
 	struct lws_context *context;
@@ -199,7 +199,7 @@ int connectTo(char* ip, int port, char* name)
 	info.uid = -1;
 
 	context = lws_create_context(&info);
-	if (context == NULL) 
+	if (context == NULL)
 	{
 		fprintf(stderr, "Creating libwebsocket context failed\n");
 		return 0;

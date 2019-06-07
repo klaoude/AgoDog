@@ -40,13 +40,13 @@ void Clear()
 
 Vec2 getZoom()
 {
-	Vec2 ret; 
+	Vec2 ret;
 	memset(&ret, 0, sizeof(Vec2));
 
 	if(isSpectator)
 	{
-		ret.x = WINDOW_WIDTH/2;
-		ret.y = WINDOW_HEIGTH/2;
+		ret.x = 9000;
+		ret.y = 6000;
 		return ret;
 	}
 
@@ -54,10 +54,10 @@ Vec2 getZoom()
 		return ret;
 
 	double factor = pow(min(64.0 / player->size, 1), 0.4);
-    ret.x = WINDOW_WIDTH / factor;
-    ret.y = WINDOW_HEIGTH / factor;
+  ret.x = WINDOW_WIDTH / factor;
+  ret.y = WINDOW_HEIGTH / factor;
 
-    return ret;
+  return ret;
 }
 
 Circle Node2Circle(Node* node)
@@ -79,15 +79,23 @@ Vec2 World2Screen(Vec2 pos)
 	Vec2 ret;
 	memset(&ret, 0, sizeof(Vec2));
 
-	if(player == NULL)
-		return ret;
+	if(isSpectator == 1)
+	{
+		ret.x = pos.x * WINDOW_WIDTH / 9000;
+		ret.y = pos.y * WINDOW_HEIGTH / 6000;
+	}
+	else
+	{
+		if(player == NULL)
+			return ret;
 
-	Vec2 zoom = getZoom();
+		Vec2 zoom = getZoom();
 
-	Vec2 playerPos = GetNodePos(player);
+		Vec2 playerPos = GetNodePos(player);
 
-	ret.x = (pos.x - playerPos.x + zoom.x / 2) * WINDOW_WIDTH / zoom.x;
-	ret.y = (pos.y - playerPos.y + zoom.y / 2) * WINDOW_HEIGTH / zoom.y;	
+		ret.x = (pos.x - playerPos.x + zoom.x / 2) * WINDOW_WIDTH / zoom.x;
+		ret.y = (pos.y - playerPos.y + zoom.y / 2) * WINDOW_HEIGTH / zoom.y;
+	}
 
 	return ret;
 }
@@ -102,7 +110,7 @@ void DrawAllNodes()
 			Circle nodeCircle = Node2Circle(tmp->node);
 
 			Vec2 nodePos = GetNodePos(tmp->node);
-			//nodePos = World2Screen(nodePos);                                                                                                                                                                                                                                                                                                                                                                                      
+			nodePos = World2Screen(nodePos);
 
 			nodeCircle.x = nodePos.x;
 			nodeCircle.y = nodePos.y;
@@ -128,8 +136,6 @@ void DrawAllNodes()
 				rekt.y = nodePos.y;
 				rekt.w = nodeSize * WINDOW_WIDTH / zoom.x;
 				rekt.h = nodeSize * WINDOW_HEIGTH / zoom.y;
-
-				printf("Drawing %d at %d %d\n", tmp->node->nodeID, rekt.x, rekt.y);
 
 				SDL_RenderCopy(pRenderer, texture, NULL, &rekt);
 
