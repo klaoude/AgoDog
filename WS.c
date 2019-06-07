@@ -75,7 +75,7 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 	{
 	case LWS_CALLBACK_CLIENT_ESTABLISHED:
 		fprintf(stderr, "ogar: LWS_CALLBACK_CLIENT_ESTABLISHED\n");
-
+		
         unsigned char connect[5] = {0xff, 0, 0, 0, 0};
 		sendCommand(wsi, connect, 5);
 
