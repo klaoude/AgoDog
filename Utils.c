@@ -126,10 +126,25 @@ void printHex(char* data, size_t size)
 	puts("");
 }
 
-void debugNode(Node node)
+void debugNode(Node* node)
 {
-    printf("[Debug] Node (id=%d)\n", node.nodeID);
-    printf("\tpos: (%d, %d)\n", node.x, node.y);
-    printf("\tsize: %d\n\tflag: %d\n\tRGB: (0x%x, 0x%x, 0x%x)\n\tname: %s\n", node.size, node.flags,
-                node.R, node.G, node.B, node.name);
+    printf("[Debug] Node (id=%d) %p\n", node->nodeID, node);
+    printf("\tpos: (%d, %d)\n", node->x, node->y);
+    printf("\tsize: %d\n\tflag: %d\n\tRGB: (0x%x, 0x%x, 0x%x)\n\tname: %s\n", node->size, node->flags,
+                node->R, node->G, node->B, node->name);
+}
+
+void printNodeStack(NodeStack* ns)
+{
+    NodeStack* tmp = ns;
+    
+    if(tmp == NULL)
+        printf("Empty");
+
+    while(tmp != NULL)
+    {
+        printf("[%d, %d, %s] -> ", tmp->node->nodeID, tmp->node->size, tmp->node->name);
+        tmp = tmp->next;
+    }
+    printf("\n");
 }

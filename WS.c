@@ -86,8 +86,8 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 	
         	if(strcmp(BotName, "spectator") == 0)
         	{
-            		unsigned char spectator[1] = {1};
-            		sendCommand(wsi, spectator, 1);
+				unsigned char spectator[1] = {1};
+				sendCommand(wsi, spectator, 1);
         	}
 		else
 		{
@@ -116,7 +116,7 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 
 			if (lws_is_final_fragment(wsi)) 
 			{
-                printHex(rbuf, offset);
+                //printHex(rbuf, offset);
                 IARecv(rbuf);
 				offset = 0;
 			}
@@ -153,6 +153,8 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 
 int connectTo(char* ip, int port, char* name)
 {
+	InitIA();
+
     struct lws_context_creation_info info;
 	struct lws_client_connect_info i;
 

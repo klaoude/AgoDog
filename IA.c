@@ -1,8 +1,13 @@
 #include "IA.h"
 
+void InitIA()
+{
+	nodes = NULL;
+}
+
 void UpdateNodes(unsigned char* data)
 {
-	NodeStack_clear(nodes);
+	//NodeStack_clear(nodes);
 	unsigned int totalNameLength = 0;
 	size_t NodeSize = 18; //sizeof(Node) - sizeof(char*)
 
@@ -46,12 +51,13 @@ void UpdateNodes(unsigned char* data)
 	memcpy(&nbDead, data + new_pos, sizeof(unsigned short)); //copie
 
 	for(int j = 0; j < nbDead; j++) //pour chaque cellule morte
-	{
+	{		
 		unsigned int nodeID;
 		memcpy(&nodeID, data + new_pos + sizeof(unsigned short) + j * sizeof(unsigned int), sizeof(unsigned int)); //on prend l'id
-
 		nodes = NodeStack_remove(nodes, nodeID); //on suprime de notre liste
 	}
+
+	printNodeStack(nodes);
 }
 
  void IARecv(unsigned char* payload)
@@ -60,7 +66,7 @@ void UpdateNodes(unsigned char* data)
 	switch(opcode)
 	{
 	case 16:
-		//UpdateNodes(payload+1);
+		UpdateNodes(payload+1);
 		//printf("Update node\n");
         break;
 
@@ -96,13 +102,13 @@ void UpdateNodes(unsigned char* data)
 		break;
 
 	case 64:
-		printf("Game area size\n");
+		/*printf("Game area size\n");
 		double a,b,c,d;
 		memcpy(&a, payload+1, 8);
 		memcpy(&b, payload+1+8, 8);
 		memcpy(&c, payload+1+2*8, 8);
 		memcpy(&d, payload+1+3*8, 8);
-		printf("(%f, %f, %f, %f)\n", a, b, c, d);
+		printf("(%f, %f, %f, %f)\n", a, b, c, d);*/
 		break;
 
 	case 72:

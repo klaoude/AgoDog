@@ -12,7 +12,7 @@ $(EXEC) : main.o UI.o IA.o WS.o Utils.o
 	$(CC) -o $(EXEC) *.o $(LDFLAGS)
 
 $(TEST) : unitTest.o Utils.o
-		$(CC) -o $(EXEC) *.o $(LDFLAGS)
+	$(CC) -o $(TEST) unitTest.o Utils.o $(LDFLAGS)
 
 unitTest.o : unitTest.c
 	$(CC) -o $@ -c $< $(CFLAGS)

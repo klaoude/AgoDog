@@ -63,6 +63,7 @@ size_t NodeStack_length(NodeStack* list);
 void NodeStack_update(NodeStack** list, Node* elem);
 
 void printHex(char* data, size_t size);
-void debugNode(Node node);
+void debugNode(Node* node);
+void printNodeStack(NodeStack* ns);
 
 #endif

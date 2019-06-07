@@ -6,5 +6,6 @@
 NodeStack* nodes;
 
 void IARecv(unsigned char* data);
+void InitIA();
 
 #endif
