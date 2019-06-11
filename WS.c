@@ -120,14 +120,21 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 
 			if (lws_is_final_fragment(wsi))
 			{
-        printHex(rbuf, offset);
-        IARecv(rbuf);
+				//printHex(rbuf, offset);
+				IARecv(rbuf);
 
-				Clear();
+				if(isUI == 1)
+				{
+					Clear();
 
-				Draw();
+					Draw();
+				}
 
-				Loop(&forceExit);
+				if(strcmp(BotName, "blue") == 0)
+					Scout(wsi);
+				
+				if(isUI == 1)
+					Loop(&forceExit);
 
 				offset = 0;
 			}
@@ -165,7 +172,9 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 int connectTo(char* ip, int port, char* name)
 {
 	InitIA();
-	InitUI();
+	
+	if(isUI == 1)
+		InitUI();
 
   struct lws_context_creation_info info;
 	struct lws_client_connect_info i;
@@ -182,7 +191,7 @@ int connectTo(char* ip, int port, char* name)
 
 	i.port = port;
 	i.origin = "agar.io";
-    BotName = name;
+  BotName = name;
 
 	if(lws_parse_uri(ip, &protocol, &i.address, &i.port, &temp))
 		;
@@ -217,5 +226,5 @@ int connectTo(char* ip, int port, char* name)
 	lwsl_err("Exiting\n");
 	lws_context_destroy(context);
 
-    return 1;
+  return 1;
 }

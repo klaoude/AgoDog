@@ -23,6 +23,8 @@ typedef struct Circle
 	Color color;
 } Circle;
 
+unsigned char isUI;
+
 SDL_Window* pWindow;
 SDL_Renderer* pRenderer;
 
@@ -32,6 +34,9 @@ int InitUI();
 void Loop(int* exit);
 void Clear();
 void Draw();
+
+void minimap_clear();
+void minimap_draw();
 
 void drawDebugCircle(int x, int y, short radius, char r, char g, char b);
 

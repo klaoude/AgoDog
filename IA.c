@@ -1,8 +1,33 @@
 #include "IA.h"
 
+void InitMap(int x, int y)
+{
+	map = (unsigned char**)malloc(y / 100 * sizeof(unsigned char *));
+	for(int i = 0; i < y / 100; i++)
+		*(map + i) = (unsigned char*)malloc(x / 100 * sizeof(unsigned char));
+
+	for(int i = 0; i < y / 100; i++)
+		for(int j = 0; j < x / 100; j++)
+			map[i][j] = 0;
+
+	initMap = 1;
+
+	WORLD_X = x;
+	WORLD_Y = y;
+
+	RDV.x = WORLD_X / 2;
+	RDV.y = WORLD_Y / 2;
+
+	printf("[BOT] Map set to (%d, %d)\n", x, y);
+}
+
 void InitIA()
 {
 	nodes = NULL;
+
+	initMap = 0;
+
+	iaStatus = EXPLORE;
 }
 
 void UpdateNodes(unsigned char* data)
@@ -46,7 +71,7 @@ void UpdateNodes(unsigned char* data)
 		
 		NodeStack_update(&nodes, node);
 
-		debugNode(node);
+		//debugNode(node);
 
 		memcpy(&end, data + startNodePos + (i+1)*(NodeSize) + totalNameLength, sizeof(unsigned int)); //la nouvelle fin (check si c'est 0)
 		i++;
@@ -64,7 +89,112 @@ void UpdateNodes(unsigned char* data)
 		nodes = NodeStack_remove(nodes, nodeID); //on suprime de notre liste
 	}
 
-	printNodeStack(nodes);
+	//printNodeStack(nodes);
+}
+
+void Move(struct lws *wsi, Vec2 pos)
+{
+	//printf("Moving to %d, %d\n", pos.x, pos.y);
+	unsigned char* packet = malloc(13);
+	memset(packet, 0, 13);
+	*packet = 16;
+
+	memcpy(packet+1, &pos, sizeof(pos));
+
+	sendCommand(wsi, packet, 13);
+}
+
+Vec2 WorldtoMap(Vec2 pos)
+{
+	Vec2 ret;
+	ret.x = pos.x / 100;
+	ret.y = pos.y / 100;
+	return ret;
+}
+
+Vec2 GetNextUnseenRegion()
+{
+	Vec2 ret;
+	for(int y = WORLD_Y / 100 - 1; y > 0; y--)
+	{
+		for(int x = WORLD_X / 100 - 1; x > 0; x--)
+		{
+			if(map[y][x] == 0)
+			{
+				ret.x = x * 100;
+				ret.y = y * 100;
+				return ret;	
+			}
+		}
+	}
+}
+
+Node* brebie_in_fov()
+{
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0)
+			return tmp->node;
+		tmp = tmp->next;
+	}
+	return NULL;
+}
+
+Node* berger_in_fov()
+{
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)
+			return tmp->node;
+		tmp = tmp->next;
+	}
+	return NULL;
+}
+
+void Scout(struct lws* wsi)
+{
+	if(player == NULL || initMap == 0)
+		return;
+
+	Node* brebie = NULL;
+	Node* berger = NULL;
+
+	switch(iaStatus)
+	{
+	case EXPLORE:
+		if((brebie = brebie_in_fov()) != NULL)
+		{
+			Node brebie_copie = *brebie;
+			NodeStack_update(&saved_brebie, &brebie_copie);
+			iaStatus = GOTORDV;
+			printf("[BOT] Brebie found !!\n");
+		}
+		else
+		{
+			Vec2 pos = GetNodePos(player);
+			Vec2 coord = WorldtoMap(pos);
+
+			if(map[coord.y][coord.x] == 0)
+			{
+				map[coord.y][coord.x] = 1;
+			}
+
+			Vec2 next = GetNextUnseenRegion();
+			Move(wsi, next);
+		}		
+		break;
+	case GOTORDV:
+		if((berger = berger_in_fov()) != NULL)
+		{
+			Move(wsi, GetNodePos(berger));
+		}
+		Move(wsi, RDV);
+		break;
+	case COMMUNICATING:
+		break;
+	}	
 }
 
  void IARecv(unsigned char* payload)
@@ -109,13 +239,15 @@ void UpdateNodes(unsigned char* data)
 		break;
 
 	case 64:
-		/*printf("Game area size\n");
-		double a,b,c,d;
-		memcpy(&a, payload+1, 8);
-		memcpy(&b, payload+1+8, 8);
-		memcpy(&c, payload+1+2*8, 8);
-		memcpy(&d, payload+1+3*8, 8);
-		printf("(%f, %f, %f, %f)\n", a, b, c, d);*/
+		if(initMap == 0)
+		{
+			double a,b,c,d;
+			memcpy(&a, payload+1, 8);
+			memcpy(&b, payload+1+8, 8);
+			memcpy(&c, payload+1+2*8, 8);
+			memcpy(&d, payload+1+3*8, 8);
+			InitMap((int)c, (int)d);
+		}		
 		break;
 
 	case 72:

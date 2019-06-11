@@ -45,8 +45,8 @@ Vec2 getZoom()
 
 	if(isSpectator)
 	{
-		ret.x = 9000;
-		ret.y = 6000;
+		ret.x = WORLD_X;
+		ret.y = WORLD_Y;
 		return ret;
 	}
 
@@ -54,10 +54,10 @@ Vec2 getZoom()
 		return ret;
 
 	double factor = pow(min(64.0 / player->size, 1), 0.4);
-  ret.x = WINDOW_WIDTH / factor;
-  ret.y = WINDOW_HEIGTH / factor;
+  	ret.x = WINDOW_WIDTH / factor;
+  	ret.y = WINDOW_HEIGTH / factor;
 
-  return ret;
+  	return ret;
 }
 
 Circle Node2Circle(Node* node)
@@ -156,7 +156,7 @@ void Draw()
 
 void Render()
 {
-	SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
+	SDL_SetRenderDrawColor(pRenderer, 125, 125, 125, 255);
 
 	SDL_RenderPresent(pRenderer);
 }

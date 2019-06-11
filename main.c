@@ -4,10 +4,33 @@
 
 int main(int argc, char** argv)
 {
-    if(argc >= 4)
-        connectTo(argv[1], atoi(argv[2]), argv[3]);
-    else
-        connectTo("127.0.0.1", 1337, "test");
+    isUI = 0;
+
+    char* name = "spectator";
+    int port = 443;
+
+    int opt;
+    while((opt = getopt(argc, argv, "gn:p:")) != -1)
+    {
+        switch(opt)
+        {
+        case 'g':
+            printf("UI\n");
+            isUI = 1;
+            break;
+        case 'n':
+            name = optarg;
+            break;
+        case 'p':
+            port = atoi(optarg);
+            break;
+        default:
+            printf("Usage incorrect !\n");
+            break;
+        }
+    }
+
+    connectTo(argv[optind], port, name);
 
     return 0;
 }
