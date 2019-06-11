@@ -68,6 +68,8 @@ void printHex(char* data, size_t size);
 void debugNode(Node* node);
 void printNodeStack(NodeStack* ns);
 
+unsigned char equalsVec2(Vec2 a, Vec2 b);
+
 double max(double a, double b);
 double min(double a, double b);
 

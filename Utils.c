@@ -158,5 +158,6 @@ void printNodeStack(NodeStack* ns)
     printf("\n");
 }
 
+unsigned char equalsVec2(Vec2 a, Vec2 b) { return a.x == b.x && a.y == b.y; }
 double max(double a, double b) { return (a > b) ? a : b; }
 double min(double a, double b) { return (a > b) ? b : a; }

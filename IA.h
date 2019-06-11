@@ -24,6 +24,7 @@ unsigned char initMap;
 Vec2 RDV;
 
 void Scout(struct lws* wsi);
+void Berger(struct lws* wsi);
 
 unsigned char isSpectator;
 Node* player;

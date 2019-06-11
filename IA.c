@@ -189,12 +189,21 @@ void Scout(struct lws* wsi)
 		if((berger = berger_in_fov()) != NULL)
 		{
 			Move(wsi, GetNodePos(berger));
+			if(equalsVec2(GetNodePos(berger), GetNodePos(player)))
+				iaStatus = COMMUNICATING;
 		}
-		Move(wsi, RDV);
+		else
+			Move(wsi, RDV);
 		break;
 	case COMMUNICATING:
+		printf("[BOT] Communicating state\n");
 		break;
 	}	
+}
+
+void Berger(struct lws* wsi)
+{
+	Move(wsi, RDV);
 }
 
  void IARecv(unsigned char* payload)
