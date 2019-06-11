@@ -31,6 +31,8 @@ Node* player;
 char* BotName;
 
 NodeStack* saved_brebie;
+unsigned int saw_id[10];
+unsigned char saw_i;
 
 unsigned char** map;
 

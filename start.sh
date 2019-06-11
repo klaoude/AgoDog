@@ -1,4 +1,5 @@
 make clean
+rm AgoBot
 make
 
 ./AgoBot -g 127.0.0.1&

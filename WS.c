@@ -90,6 +90,7 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 			sendCommand(wsi, spectator, 1);
 
 			isSpectator = 1;
+			printf("[DEBUG] Conection etablie ! (spectator)\n");
 		}
 		else
 		{
@@ -101,9 +102,10 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 			sendCommand(wsi, namePacket, nameLength + 1);
 
 			isSpectator = 0;
+			printf("[DEBUG] Conection etablie ! (%s)\n", name);
 		}
 
-		printf("[DEBUG] Conection etablie ! (%s)\n", name);
+		
 
 		break;
 

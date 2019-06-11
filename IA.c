@@ -26,6 +26,8 @@ void InitIA()
 	nodes = NULL;
 
 	initMap = 0;
+	memset(saw_id, 0, 10 * sizeof(unsigned int));
+	saw_i = 0;
 
 	iaStatus = EXPLORE;
 }
@@ -129,12 +131,20 @@ Vec2 GetNextUnseenRegion()
 	}
 }
 
+unsigned char notInSaw(unsigned int id)
+{
+	for(int i = 0; i < 10; i++)
+		if(saw_id[i] == id)
+			return 0;
+	return 1;
+}
+
 Node* brebie_in_fov()
 {
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0)
+		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && notInSaw(tmp->node->nodeID))
 			return tmp->node;
 		tmp = tmp->next;
 	}
@@ -160,16 +170,19 @@ void Scout(struct lws* wsi)
 
 	Node* brebie = NULL;
 	Node* berger = NULL;
+	static int blue_counter = 0;
 
 	switch(iaStatus)
 	{
 	case EXPLORE:
 		if((brebie = brebie_in_fov()) != NULL)
 		{
-			Node brebie_copie = *brebie;
-			NodeStack_update(&saved_brebie, &brebie_copie);
+
+			Node* brebie_copie = malloc(sizeof(Node));
+			memcpy(brebie_copie, brebie, sizeof(Node));
+			NodeStack_update(&saved_brebie, brebie_copie);
 			iaStatus = GOTORDV;
-			printf("[BOT] Brebie found !!\n");
+			printf("[BOT-Blue] Brebie found !!\n");
 		}
 		else
 		{
@@ -188,15 +201,36 @@ void Scout(struct lws* wsi)
 	case GOTORDV:
 		if((berger = berger_in_fov()) != NULL)
 		{
+			printf("[Bot-Blue] Found berger !\n");
 			Move(wsi, GetNodePos(berger));
 			if(equalsVec2(GetNodePos(berger), GetNodePos(player)))
+			{
 				iaStatus = COMMUNICATING;
+				printf("Same pos, communication...\n");
+			}
 		}
 		else
 			Move(wsi, RDV);
 		break;
 	case COMMUNICATING:
-		printf("[BOT] Communicating state\n");
+		printf("[BOT-Blue] Communicating state, blue_counter=%d\n", blue_counter);
+
+		if(blue_counter >= 5)
+		{
+			if(blue_counter >= 10)
+			{
+				saw_id[saw_i++] = saved_brebie->node->nodeID;
+				saved_brebie = NodeStack_remove(saved_brebie, saved_brebie->node->nodeID);
+				iaStatus = EXPLORE;
+				blue_counter = -1;
+			}
+			else
+			{
+				Move(wsi, GetNodePos(saved_brebie->node));
+				debugNode(saved_brebie->node);
+			}
+		}
+		blue_counter++;
 		break;
 	}	
 }
