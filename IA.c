@@ -235,6 +235,25 @@ void Scout(struct lws* wsi)
 	}	
 }
 
+double distance(Vec2 a, Vec2 b)
+{
+	return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
+}
+
+Vec2 GetTarget(Node* brebie)
+{
+	Vec2 ret;
+
+	Vec2 dest; dest.x = 0; dest.y = WORLD_Y / 2;
+	double rb = distance(GetNodePos(brebie), dest);
+	double ab = atan(brebie->y / brebie->x);
+
+	ret.x = (rb + RAYON_BERGER + OFFSET)*cos(ab);
+	ret.y = (rb + RAYON_BERGER + OFFSET)*sin(ab);
+
+	return ret;
+}
+
 void Berger(struct lws* wsi)
 {
 	Move(wsi, RDV);

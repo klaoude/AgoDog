@@ -4,6 +4,9 @@
 #include "Utils.h"
 #include "WS.h"
 
+#define OFFSET 20
+#define RAYON_BERGER 200
+
 unsigned int WORLD_X;
 unsigned int WORLD_Y;
 
