@@ -1,5 +1,21 @@
 #include "Utils.h"
 
+unsigned char NodeNotInBuff(void* buff, size_t len, Node* elem)
+{
+	for(int i = 0; i < len; i++)
+		if(((Node**)buff)[i]->nodeID == elem->nodeID)
+			return 0;
+	return 1;
+}
+
+unsigned char notInBuff(void* buff, size_t len, int elem)
+{
+	for(int i = 0; i < len; i++)
+		if(((int*)buff)[i] == elem)
+			return 0;
+	return 1;
+}
+
 Vec2 GetNodePos(Node* node)
 {
 	Vec2 ret;
@@ -7,6 +23,11 @@ Vec2 GetNodePos(Node* node)
 	ret.y = node->y;
 
 	return ret;
+}
+
+unsigned char Vec2_isZero(Vec2 vec)
+{
+	return vec.x == 0 && vec.y == 0;
 }
 
 void NodeStack_push(NodeStack** list, Node* elem)

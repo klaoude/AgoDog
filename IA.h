@@ -3,6 +3,7 @@
 
 #include "Utils.h"
 #include "WS.h"
+#include "Scout.h"
 
 #define OFFSET 20
 #define RAYON_BERGER 200
@@ -10,35 +11,36 @@
 unsigned int WORLD_X;
 unsigned int WORLD_Y;
 
-typedef enum SCOUT_STATUS
-{  
-    EXPLORE,
-    GOTORDV,
-    COMMUNICATING
-} SCOUT_STATUS;
-
 NodeStack* nodes;
 
 void IARecv(unsigned char* data);
 void InitIA();
 
+void Move(struct lws *wsi, Vec2 pos);
+
 void InitMap(int x, int y);
 unsigned char initMap;
 Vec2 RDV;
 
-void Scout(struct lws* wsi);
 void Berger(struct lws* wsi);
 
 unsigned char isSpectator;
 Node* player;
 char* BotName;
 
-NodeStack* saved_brebie;
-unsigned int saw_id[10];
-unsigned char saw_i;
+unsigned int ticks;
 
-unsigned char** map;
+typedef enum PURPLE_STATE
+{
+    LISTEN,
+    BRING_BACK,
+    GOTO,
+    GETTING_INFO
+} PURPLE_STATE;
 
-SCOUT_STATUS iaStatus;
+PURPLE_STATE purple_status;
+unsigned int purple_ticks;
+Vec2 purple_communication_array[20];
+unsigned int purple_communication_target_id;
 
 #endif

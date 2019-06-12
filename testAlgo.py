@@ -1,4 +1,6 @@
 from math import *
+import numpy as np
+import matplotlib.pyplot as plt
 
 def get_vect(a, b):
 	return (b[0] - a[0], b[1] - a[1])
@@ -19,6 +21,7 @@ def calc_angle(a, b, c):
 def rotate(u, teta):
 	return (u[0] * cos(teta) - u[1] * sin(teta), u[0] * sin(teta) + u[1] * cos(teta))
 
+"""
 C = (0, 0)
 
 B1 = (3, 1.5)
@@ -49,3 +52,32 @@ print calc_angle(C, B8, P4)
 U = (10, 0)
 teta = -pi/4
 print rotate(U, teta)
+"""
+
+"""
+[Bot-Purple] Trajet viewer !
+(0, 0) -> (4500, 3000) -> (4500, 3000) -> (4500, 3000) -> (4500, 3000) -> (4500, 3000) -> (4529, 3026) -> (4529, 3026) -> (4559, 3053) -> (4559, 3053) -> (4589, 3080) -> (4589, 3080) -> (4589, 3080) -> (4618, 3107) -> (4618, 3107) -> (4648, 3133) -> (4648, 3133) -> (4682, 3155) -> (4682, 3155) -> (4715, 3177) -> 
+-------------------------------------
+[Bot-Purple] sorted Trajet viewer !
+(4529, 3026) -> (4559, 3053) -> (4589, 3080) -> (4618, 3107) -> (4648, 3133) -> (4682, 3155) -> 
+-------------------------------------
+[Bot-Purple] Direction = (153, 129) !
+"""
+
+def calc_dir(deplacement):
+	None
+
+def show_dir(dep):
+	x = []
+	y = []
+	for vec in dep:
+		x.append(vec[0] - 4500)
+		y.append(vec[1] - 3000)
+	plt.plot(x, y, 'ro')
+	plt.axis([-100, 100, -100, 100])
+	plt.show()
+
+
+move = [(4500, 3000), (4506, 3039), (4513, 3078), (4520, 3118), (4527, 3157), (4534, 3197), (4541, 3236)]
+
+show_dir(move)

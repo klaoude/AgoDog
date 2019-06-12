@@ -141,6 +141,8 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 					Loop(&forceExit);
 
 				offset = 0;
+
+				ticks++;
 			}
 		}
 		else

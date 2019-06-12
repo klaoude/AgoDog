@@ -29,7 +29,13 @@ void InitIA()
 	memset(saw_id, 0, 10 * sizeof(unsigned int));
 	saw_i = 0;
 
+	ticks = 0;
+
 	iaStatus = EXPLORE;
+
+	purple_status = GOTO;
+	memset(&purple_communication_array, 0, sizeof(Vec2) * 20);
+	purple_communication_target_id = 0;
 }
 
 void UpdateNodes(unsigned char* data)
@@ -106,135 +112,6 @@ void Move(struct lws *wsi, Vec2 pos)
 	sendCommand(wsi, packet, 13);
 }
 
-Vec2 WorldtoMap(Vec2 pos)
-{
-	Vec2 ret;
-	ret.x = pos.x / 100;
-	ret.y = pos.y / 100;
-	return ret;
-}
-
-Vec2 GetNextUnseenRegion()
-{
-	Vec2 ret;
-	for(int y = WORLD_Y / 100 - 1; y > 0; y--)
-	{
-		for(int x = WORLD_X / 100 - 1; x > 0; x--)
-		{
-			if(map[y][x] == 0)
-			{
-				ret.x = x * 100;
-				ret.y = y * 100;
-				return ret;	
-			}
-		}
-	}
-}
-
-unsigned char notInSaw(unsigned int id)
-{
-	for(int i = 0; i < 10; i++)
-		if(saw_id[i] == id)
-			return 0;
-	return 1;
-}
-
-Node* brebie_in_fov()
-{
-	NodeStack* tmp = nodes;
-	while(tmp != NULL)
-	{
-		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && notInSaw(tmp->node->nodeID))
-			return tmp->node;
-		tmp = tmp->next;
-	}
-	return NULL;
-}
-
-Node* berger_in_fov()
-{
-	NodeStack* tmp = nodes;
-	while(tmp != NULL)
-	{
-		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)
-			return tmp->node;
-		tmp = tmp->next;
-	}
-	return NULL;
-}
-
-void Scout(struct lws* wsi)
-{
-	if(player == NULL || initMap == 0)
-		return;
-
-	Node* brebie = NULL;
-	Node* berger = NULL;
-	static int blue_counter = 0;
-
-	switch(iaStatus)
-	{
-	case EXPLORE:
-		if((brebie = brebie_in_fov()) != NULL)
-		{
-
-			Node* brebie_copie = malloc(sizeof(Node));
-			memcpy(brebie_copie, brebie, sizeof(Node));
-			NodeStack_update(&saved_brebie, brebie_copie);
-			iaStatus = GOTORDV;
-			printf("[BOT-Blue] Brebie found !!\n");
-		}
-		else
-		{
-			Vec2 pos = GetNodePos(player);
-			Vec2 coord = WorldtoMap(pos);
-
-			if(map[coord.y][coord.x] == 0)
-			{
-				map[coord.y][coord.x] = 1;
-			}
-
-			Vec2 next = GetNextUnseenRegion();
-			Move(wsi, next);
-		}		
-		break;
-	case GOTORDV:
-		if((berger = berger_in_fov()) != NULL)
-		{
-			printf("[Bot-Blue] Found berger !\n");
-			Move(wsi, GetNodePos(berger));
-			if(equalsVec2(GetNodePos(berger), GetNodePos(player)))
-			{
-				iaStatus = COMMUNICATING;
-				printf("Same pos, communication...\n");
-			}
-		}
-		else
-			Move(wsi, RDV);
-		break;
-	case COMMUNICATING:
-		printf("[BOT-Blue] Communicating state, blue_counter=%d\n", blue_counter);
-
-		if(blue_counter >= 5)
-		{
-			if(blue_counter >= 10)
-			{
-				saw_id[saw_i++] = saved_brebie->node->nodeID;
-				saved_brebie = NodeStack_remove(saved_brebie, saved_brebie->node->nodeID);
-				iaStatus = EXPLORE;
-				blue_counter = -1;
-			}
-			else
-			{
-				Move(wsi, GetNodePos(saved_brebie->node));
-				debugNode(saved_brebie->node);
-			}
-		}
-		blue_counter++;
-		break;
-	}	
-}
-
 double distance(Vec2 a, Vec2 b)
 {
 	return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
@@ -254,9 +131,132 @@ Vec2 GetTarget(Node* brebie)
 	return ret;
 }
 
+Node* scout_in_fov()
+{
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && strcmp(tmp->node->name, "blue") == 0)
+			return tmp->node;
+		tmp = tmp->next;
+	}
+	return NULL;
+}
+
+void show_path()
+{
+	printf("[Bot-Purple] Trajet viewer !\n");
+	for(int i = 0; i < 20; i++)
+		printf("(%d, %d) -> ", purple_communication_array[i].x, purple_communication_array[i].y);
+	printf("\n-------------------------------------\n");
+}
+
+Vec2 process_path()
+{
+	Vec2 sorted_path[20] = {0};
+
+	unsigned int sorted_counter = 0;
+
+	for(int i = 0; i < 20; i++)
+	{
+		if(!Vec2_isZero(purple_communication_array[i]) && !equalsVec2(purple_communication_array[i], RDV)
+			&& !equalsVec2(purple_communication_array[i-1], purple_communication_array[i]))
+		{
+			sorted_path[sorted_counter++] = purple_communication_array[i];
+		}
+	}
+
+	sorted_counter--;
+
+	printf("[Bot-Purple] conteur = %d\n", sorted_counter);
+
+	printf("[Bot-Purple] sorted Trajet viewer !\n");
+	for(int i = 0; i < sorted_counter; i++)
+		printf("(%d, %d) -> ", sorted_path[i].x, sorted_path[i].y);
+	printf("\n-------------------------------------\n");
+
+	Vec2 direction;
+	direction.x = sorted_path[sorted_counter - 1].x - RDV.x;
+	direction.y = sorted_path[sorted_counter - 1].y - RDV.y;
+
+	printf("[Bot-Purple] Direction = (%d, %d) !\n", direction.x, direction.y);
+
+	//direction.x *= 10;
+	//direction.y *= 10;
+
+	return direction;
+}
+
 void Berger(struct lws* wsi)
 {
-	Move(wsi, RDV);
+	if(player == NULL)
+		return;
+
+	Node* scout = NULL;
+	Node* target = NULL;
+	Vec2 direction;
+	Node* brebie = NULL;
+
+	switch(purple_status)
+	{
+	case GOTO:
+		direction.x = 0; direction.y = 0;
+
+		Move(wsi, RDV);
+
+		if(equalsVec2(GetNodePos(player), RDV))
+		{
+			purple_status = LISTEN;
+			printf("[Bot-Purple] Arrived at RDV !\n");
+		}
+
+		break;
+
+	case LISTEN:
+		if((scout = scout_in_fov()) != NULL && equalsVec2(GetNodePos(player), GetNodePos(scout)))
+		{
+				purple_status = GETTING_INFO;
+				printf("[Bot-Purple] Samepos as a scout, Start listening !\n");
+				purple_ticks = ticks;
+				purple_communication_target_id = scout->nodeID;
+		}
+		break;
+
+	case GETTING_INFO:
+		printf("[BOT-Purple] info state, deltatime=%d\n", ticks - purple_ticks);
+		target = NodeStack_get(nodes, purple_communication_target_id);
+		if(ticks - purple_ticks > 20)
+		{
+			printf("[Bot-Purple] Info recevied : \n");
+			show_path();
+
+			direction = process_path();
+
+			purple_status = BRING_BACK;
+		}
+		else if(target != NULL)
+		{
+			purple_communication_array[ticks - purple_ticks] = GetNodePos(target);
+			debugNode(target);
+		}
+
+		break;
+
+	case BRING_BACK:
+		if(!Vec2_isZero(direction))
+		{
+			if((brebie = brebie_in_fov()) != NULL)
+				Move(wsi, GetNodePos(brebie));
+			else
+				Move(wsi, direction);
+		}
+		else
+		{
+			printf("[Bot-Purple] Bug !\n");
+		}
+		
+		break;
+	}
 }
 
  void IARecv(unsigned char* payload)

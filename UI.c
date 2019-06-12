@@ -43,6 +43,13 @@ Vec2 getZoom()
 	Vec2 ret;
 	memset(&ret, 0, sizeof(Vec2));
 
+	if(!initMap)
+	{
+		ret.x = 1;
+		ret.y = 1;
+		return ret;
+	}
+
 	if(isSpectator)
 	{
 		ret.x = WORLD_X;
@@ -100,49 +107,53 @@ Vec2 World2Screen(Vec2 pos)
 	return ret;
 }
 
+void DrawNode(Node* node)
+{
+	Circle nodeCircle = Node2Circle(node);
+
+	Vec2 nodePos = GetNodePos(node);
+	nodePos = World2Screen(nodePos);
+
+	nodeCircle.x = nodePos.x;
+	nodeCircle.y = nodePos.y;
+
+	DrawCircle(&nodeCircle);
+
+	if(node->type == PLAYER)
+	{
+		char* toWrite = malloc(strlen(node->name) + 1 + 6);
+		sprintf(toWrite, "%s [%d]", node->name, node->size);
+		SDL_Color color;
+		color.r = 255 - node->R;
+		color.g = 255 - node->G;
+		color.b = 255 - node->B;
+		color.a = 255;
+		SDL_Surface* textSurface = TTF_RenderUTF8_Blended(pFont, toWrite, color);
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
+
+		Vec2 zoom = getZoom();
+		unsigned short nodeSize = node->size;
+		SDL_Rect rekt;
+		rekt.x = nodePos.x - nodeSize / 2;
+		rekt.y = nodePos.y;
+		rekt.w = nodeSize * WINDOW_WIDTH / zoom.x;
+		rekt.h = nodeSize * WINDOW_HEIGTH / zoom.y;
+
+		SDL_RenderCopy(pRenderer, texture, NULL, &rekt);
+
+		SDL_FreeSurface(textSurface);
+		SDL_DestroyTexture(texture);
+	}
+}
+
 void DrawAllNodes()
 {
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
 		if(tmp->node != NULL)
-		{
-			Circle nodeCircle = Node2Circle(tmp->node);
+			DrawNode(tmp->node);
 
-			Vec2 nodePos = GetNodePos(tmp->node);
-			nodePos = World2Screen(nodePos);
-
-			nodeCircle.x = nodePos.x;
-			nodeCircle.y = nodePos.y;
-
-			DrawCircle(&nodeCircle);
-
-			if(tmp->node->type == PLAYER)
-			{
-				char* toWrite = malloc(strlen(tmp->node->name) + 1 + 6);
-				sprintf(toWrite, "%s [%d]", tmp->node->name, tmp->node->size);
-				SDL_Color color;
-				color.r = 255 - tmp->node->R;
-				color.g = 255 - tmp->node->G;
-				color.b = 255 - tmp->node->B;
-				color.a = 255;
-				SDL_Surface* textSurface = TTF_RenderUTF8_Blended(pFont, toWrite, color);
-				SDL_Texture* texture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
-
-				Vec2 zoom = getZoom();
-				unsigned short nodeSize = tmp->node->size;
-				SDL_Rect rekt;
-				rekt.x = nodePos.x - nodeSize / 2;
-				rekt.y = nodePos.y;
-				rekt.w = nodeSize * WINDOW_WIDTH / zoom.x;
-				rekt.h = nodeSize * WINDOW_HEIGTH / zoom.y;
-
-				SDL_RenderCopy(pRenderer, texture, NULL, &rekt);
-
-				SDL_FreeSurface(textSurface);
-				SDL_DestroyTexture(texture);
-			}
-		}
 		tmp = tmp->next;
 	}
 }
@@ -150,6 +161,18 @@ void DrawAllNodes()
 void Draw()
 {
 	//drawWalls();
+
+	Node enclos;
+	enclos.nodeID = 0;
+	enclos.x = 0;
+	enclos.y = WORLD_Y / 2;
+	enclos.size = 900;
+	enclos.R = 50;
+	enclos.G = 50;
+	enclos.B = 50;
+	enclos.flags = 0x2;
+	
+	DrawNode(&enclos);
 
 	DrawAllNodes();
 }

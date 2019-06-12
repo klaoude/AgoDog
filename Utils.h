@@ -55,6 +55,8 @@ typedef struct NodeStack
 } NodeStack;
 
 Vec2 GetNodePos(Node* node);
+unsigned char Vec2_isZero(Vec2 vec);
+unsigned char equalsVec2(Vec2 a, Vec2 b);
 
 void NodeStack_push(NodeStack** list, Node* elem);
 void NodeStack_clear(NodeStack* list);
@@ -68,7 +70,8 @@ void printHex(char* data, size_t size);
 void debugNode(Node* node);
 void printNodeStack(NodeStack* ns);
 
-unsigned char equalsVec2(Vec2 a, Vec2 b);
+unsigned char notInBuff(void* buff, size_t len, int elem);
+unsigned char NodeNotInBuff(void* buff, size_t len, Node* elem);
 
 double max(double a, double b);
 double min(double a, double b);
