@@ -176,8 +176,8 @@ Vec2 process_path()
 	printf("\n-------------------------------------\n");
 
 	Vec2 direction;
-	direction.x = sorted_path[sorted_counter - 1].x - RDV.x;
-	direction.y = sorted_path[sorted_counter - 1].y - RDV.y;
+	direction.x = sorted_path[sorted_counter - 1].x * 4;
+	direction.y = sorted_path[sorted_counter - 1].y * 4;
 
 	printf("[Bot-Purple] Direction = (%d, %d) !\n", direction.x, direction.y);
 
@@ -194,7 +194,7 @@ void Berger(struct lws* wsi)
 
 	Node* scout = NULL;
 	Node* target = NULL;
-	Vec2 direction;
+	static Vec2 direction;
 	Node* brebie = NULL;
 
 	switch(purple_status)
@@ -246,9 +246,15 @@ void Berger(struct lws* wsi)
 		if(!Vec2_isZero(direction))
 		{
 			if((brebie = brebie_in_fov()) != NULL)
+			{
 				Move(wsi, GetNodePos(brebie));
+				debugNode(brebie);
+			}
 			else
+			{
 				Move(wsi, direction);
+				printf("[Bot-Purple] Going to (%d, %d)\n", direction.x, direction.y);
+			}
 		}
 		else
 		{
