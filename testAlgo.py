@@ -11,6 +11,10 @@ def dot(a, b):
 def norm(a):
 	return sqrt(a[0]*a[0] + a[1]*a[1])
 
+def dist(a, b):
+	return sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1])*(b [1] - a[1]))
+
+
 def calc_angle(a, b, c):
 	AB = get_vect(a, b)
 	AC = get_vect(a, c)
@@ -20,6 +24,34 @@ def calc_angle(a, b, c):
 
 def rotate(u, teta):
 	return (u[0] * cos(teta) - u[1] * sin(teta), u[0] * sin(teta) + u[1] * cos(teta))
+
+def target(brebie):
+	dest = (0, 0)
+	
+	rb = dist(brebie, dest)
+	ab = tan(brebie[1] - dest[1] / brebie[0] - dest[0])
+
+	print "rb = " + str(rb) + " ab = " + str(ab)
+
+	ret = ((rb+3)*cos(ab), (rb+3)*sin(ab))
+
+	x = [0]
+	y = [0]
+
+	x.append(brebie[0])
+	x.append(ret[0])
+
+	y.append(brebie[1])
+	y.append(ret[1])
+
+	plt.plot(x, y, 'ro')
+	plt.axis([-10, 10, -10, 10])
+	plt.show()
+	
+	return ret
+
+B = (-1, 1)
+print target(B)
 
 """
 C = (0, 0)
@@ -64,6 +96,7 @@ print rotate(U, teta)
 [Bot-Purple] Direction = (153, 129) !
 """
 
+"""
 def calc_dir(deplacement):
 	None
 
@@ -81,3 +114,4 @@ def show_dir(dep):
 move = [(4500, 3000), (4506, 3039), (4513, 3078), (4520, 3118), (4527, 3157), (4534, 3197), (4541, 3236)]
 
 show_dir(move)
+"""

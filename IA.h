@@ -8,6 +8,9 @@
 #define OFFSET 20
 #define RAYON_BERGER 200
 
+#define BASE_X 0
+#define BASE_Y 4500
+
 unsigned int WORLD_X;
 unsigned int WORLD_Y;
 

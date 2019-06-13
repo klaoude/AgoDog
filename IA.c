@@ -119,14 +119,20 @@ double distance(Vec2 a, Vec2 b)
 
 Vec2 GetTarget(Node* brebie)
 {
+	//BUUUUUUG
 	Vec2 ret;
 
-	Vec2 dest; dest.x = 0; dest.y = WORLD_Y / 2;
+	Vec2 dest;
+	dest.x = BASE_X; 
+	dest.y = BASE_Y;
+	
 	double rb = distance(GetNodePos(brebie), dest);
-	double ab = atan(brebie->y / brebie->x);
+	double ab = brebie->x - BASE_X == 0 ? 0 : tan(brebie->y - BASE_Y / brebie->x - BASE_X);
 
 	ret.x = (rb + RAYON_BERGER + OFFSET)*cos(ab);
 	ret.y = (rb + RAYON_BERGER + OFFSET)*sin(ab);
+
+	printf("[Bot-Purple] GetTarget Rb = %f, Ab = %f, ret = (%d, %d)\n", rb, ab, ret.x, ret.y);
 
 	return ret;
 }
@@ -187,6 +193,50 @@ Vec2 process_path()
 	return direction;
 }
 
+double calcAngle(Vec2 u, Vec2 v)
+{
+	return acos((u.x * v.x + u.y * v.y) / (sqrt(u.x* u.x + u.y * u.y) * sqrt(v.x*v.x + v.y*v.y)));
+}
+
+Vec2 rotate(Vec2 vec, double angle)
+{
+	Vec2 ret;
+	ret.x = vec.x * cos(angle) + vec.y * sin(angle);
+	ret.y = (-vec.y) * sin(angle) + vec.x * sin(angle);
+	return ret;
+}
+
+void bring_back(struct lws* wsi, Node* brebie)
+{
+	Vec2 U,V;
+	Vec2 target = GetTarget(brebie);
+	printf("[Bot-Purple] brebie [%d](%d, %d) target (%d, %d)\n", brebie->nodeID, brebie->x, brebie->y, target.x, target.y);
+	if(!equalsVec2(GetNodePos(player), target))
+	{
+		if(distance(GetNodePos(brebie), GetNodePos(player)) < RAYON_BERGER + OFFSET)
+		{
+			U.x = brebie->x - player->x;
+			U.y = brebie->y - player->y;
+			V.x = target.x - player->x;
+			V.y = target.y - player->y;
+			double angle = calcAngle(U, V);
+
+			Vec2 dest = angle > 0 ? rotate(target, 45) : rotate(target, -45);
+			Move(wsi, dest);
+		}
+		else
+			Move(wsi, target);
+	}
+	else
+	{
+		Vec2 base;
+		base.x = BASE_X;
+		base.y = BASE_Y;
+		Move(wsi, base);
+	}
+	
+}
+
 void Berger(struct lws* wsi)
 {
 	if(player == NULL)
@@ -215,10 +265,10 @@ void Berger(struct lws* wsi)
 	case LISTEN:
 		if((scout = scout_in_fov()) != NULL && equalsVec2(GetNodePos(player), GetNodePos(scout)))
 		{
-				purple_status = GETTING_INFO;
-				printf("[Bot-Purple] Samepos as a scout, Start listening !\n");
-				purple_ticks = ticks;
-				purple_communication_target_id = scout->nodeID;
+			purple_status = GETTING_INFO;
+			printf("[Bot-Purple] Samepos as a scout, Start listening !\n");
+			purple_ticks = ticks;
+			purple_communication_target_id = scout->nodeID;
 		}
 		break;
 
@@ -247,20 +297,19 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL)
 			{
-				Move(wsi, GetNodePos(brebie));
-				debugNode(brebie);
+				printf("[Bot-Purple] Bring back brebie !\n");
+				bring_back(wsi, brebie);
 			}
 			else
 			{
 				Move(wsi, direction);
-				printf("[Bot-Purple] Going to (%d, %d)\n", direction.x, direction.y);
+				//printf("[Bot-Purple] Going to (%d, %d)\n", direction.x, direction.y);
 			}
 		}
 		else
 		{
 			printf("[Bot-Purple] Bug !\n");
-		}
-		
+		}		
 		break;
 	}
 }

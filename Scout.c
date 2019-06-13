@@ -5,7 +5,7 @@ Node* brebie_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && notInBuff(saw_id, 10, tmp->node->nodeID))
+		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0) //&& notInBuff(saw_id, 10, tmp->node->nodeID))
 			return tmp->node;
 		tmp = tmp->next;
 	}
@@ -113,24 +113,24 @@ void Scout(struct lws* wsi)
 			Move(wsi, RDV);
 		break;
 	case COMMUNICATING:
-		printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
+		//printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
 
 		if(ticks - blue_ticks_start >= 2)
 		{
 			if(ticks - blue_ticks_start >= 15)
 			{
-                printf("[Bot-Blue] Sended direction (%d, %d)\n", saved_brebie->node->x - WORLD_X, saved_brebie->node->y - WORLD_Y);
+                printf("[Bot-Blue] Sended direction (%d, %d)\n", saved_brebie->node->x, saved_brebie->node->y);
 				saw_id[saw_i++] = saved_brebie->node->nodeID;
 				saved_brebie = NodeStack_remove(saved_brebie, saved_brebie->node->nodeID);
                 berger_id[berger_i].node = berger;
                 berger_id[berger_i++].time = 200;
                 if(ticks - blue_ticks_start >= 20) ;
-                else iaStatus = EXPLORE;
+                //else iaStatus = EXPLORE;
 			}
 			else
 			{
 				Move(wsi, GetNodePos(saved_brebie->node));
-				debugNode(saved_brebie->node);
+				//debugNode(saved_brebie->node);
 			}
 		}
 		break;
