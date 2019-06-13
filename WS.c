@@ -104,9 +104,6 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 			isSpectator = 0;
 			printf("[DEBUG] Conection etablie ! (%s)\n", name);
 		}
-
-		
-
 		break;
 
  	case LWS_CALLBACK_CLIENT_WRITEABLE:
