@@ -127,10 +127,10 @@ Vec2 GetTarget(Node* brebie)
 	dest.y = BASE_Y;
 	
 	double rb = distance(GetNodePos(brebie), dest);
-	double ab = brebie->x - BASE_X == 0 ? 0 : tan(brebie->y - BASE_Y / brebie->x - BASE_X);
+	double ab = brebie->x - BASE_X == 0 ? 0 : tan(BASE_Y - brebie->y / brebie->x - BASE_X);
 
-	ret.x = (rb + RAYON_BERGER + OFFSET)*cos(ab);
-	ret.y = (rb + RAYON_BERGER + OFFSET)*sin(ab);
+	ret.x = (rb + RAYON_BERGER + OFFSET)*cos(ab) + BASE_X;
+	ret.y = (rb + RAYON_BERGER + OFFSET)*sin(ab) + BASE_Y;
 
 	printf("[Bot-Purple] GetTarget Rb = %f, Ab = %f, ret = (%d, %d)\n", rb, ab, ret.x, ret.y);
 
@@ -157,6 +157,19 @@ void show_path()
 	printf("\n-------------------------------------\n");
 }
 
+Vec2 Moyenne(Vec2 tab[], size_t len)
+{
+	Vec2 ret;
+	for(int i = 0; i < len; i++)
+	{
+		ret.x += tab[i].x;
+		ret.y += tab[i].y;
+	}
+	ret.x /= len;
+	ret.y /= len;
+	return ret;
+}
+
 Vec2 process_path()
 {
 	Vec2 sorted_path[20] = {0};
@@ -181,14 +194,12 @@ Vec2 process_path()
 		printf("(%d, %d) -> ", sorted_path[i].x, sorted_path[i].y);
 	printf("\n-------------------------------------\n");
 
-	Vec2 direction;
-	direction.x = sorted_path[sorted_counter - 1].x * 4;
-	direction.y = sorted_path[sorted_counter - 1].y * 4;
+	Vec2 direction = Moyenne(sorted_path, sorted_counter);
 
 	printf("[Bot-Purple] Direction = (%d, %d) !\n", direction.x, direction.y);
 
-	//direction.x *= 10;
-	//direction.y *= 10;
+	direction.x = (direction.x - WORLD_X) * 10;
+	direction.y = (WORLD_Y - direction.y) * 10;
 
 	return direction;
 }
@@ -259,7 +270,6 @@ void Berger(struct lws* wsi)
 			purple_status = LISTEN;
 			printf("[Bot-Purple] Arrived at RDV !\n");
 		}
-
 		break;
 
 	case LISTEN:
@@ -297,7 +307,7 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL)
 			{
-				printf("[Bot-Purple] Bring back brebie !\n");
+				//printf("[Bot-Purple] Bring back brebie !\n");
 				bring_back(wsi, brebie);
 			}
 			else

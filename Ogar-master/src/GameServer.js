@@ -173,7 +173,7 @@ GameServer.prototype.start = function() {
         // YOU MAY BE COMMITTING COPYRIGHT INFRINGEMENT AND LEGAL ACTION MAY BE TAKEN
         // AGAINST YOU. THIS SECTION OF CODE WAS ADDED ON JULY 9, 2015 AT THE REQUEST
         // OF THE AGAR.IO DEVELOPERS.
-        var origin = ws.upgradeReq.headers.origin;
+        /*var origin = ws.upgradeReq.headers.origin;
         if (origin != 'http://agar.io' &&
             origin != 'https://agar.io' &&
             origin != 'http://localhost' &&
@@ -183,7 +183,7 @@ GameServer.prototype.start = function() {
 
             ws.close();
             return;
-        }
+        }*/
         // -----/Client authenticity check code -----
 
         function close(error) {
