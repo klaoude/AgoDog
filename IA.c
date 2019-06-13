@@ -1,5 +1,10 @@
 #include "IA.h"
 
+double calcAngle(Vec2 u, Vec2 v)
+{
+	return acos((u.x * v.x + u.y * v.y) / (sqrt(u.x* u.x + u.y * u.y) * sqrt(v.x*v.x + v.y*v.y)));
+}
+
 void InitMap(int x, int y)
 {
 	map = (unsigned char**)malloc(y / 100 * sizeof(unsigned char *));
@@ -127,7 +132,9 @@ Vec2 GetTarget(Node* brebie)
 	dest.y = BASE_Y;
 	
 	double rb = distance(GetNodePos(brebie), dest);
-	double ab = brebie->x - BASE_X == 0 ? 0 : tan(brebie->y - BASE_Y / brebie->x - BASE_X);
+	double ab = brebie->x - BASE_X == 0 ? 0 : tan((BASE_Y - brebie->y) / (brebie->x - BASE_X));
+
+	//ab = calcAngle()
 
 	ret.x = (rb + RAYON_BERGER + OFFSET)*cos(ab);
 	ret.y = (rb + RAYON_BERGER + OFFSET)*sin(ab);
@@ -191,11 +198,6 @@ Vec2 process_path()
 	//direction.y *= 10;
 
 	return direction;
-}
-
-double calcAngle(Vec2 u, Vec2 v)
-{
-	return acos((u.x * v.x + u.y * v.y) / (sqrt(u.x* u.x + u.y * u.y) * sqrt(v.x*v.x + v.y*v.y)));
 }
 
 Vec2 rotate(Vec2 vec, double angle)
