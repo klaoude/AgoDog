@@ -224,15 +224,20 @@ Vec2 process_path()
 
 	sorted_counter--;
 
-	Vec2 direction = Moyenne(sorted_path, sorted_counter);
+	//Vec2 direction = Moyenne(sorted_path, sorted_counter);
+	Vec2 direction;
+	direction.x =sorted_path[sorted_counter-1].x - sorted_path[0].x;
+	direction.y = sorted_path[sorted_counter-1].y - sorted_path[0].y;
+	printf("direction = [%d ; %d]\n", direction.x, direction.y);
 
-	Vec2 node_pos = GetNodePos(player);
+	/*Vec2 node_pos = GetNodePos(player);
 
 	Vec2 ret;
 	ret.x = direction.x - node_pos.x;
 	ret.y = node_pos.y - direction.y;
 
-	return ret;
+	return ret;*/
+	return direction;
 
 	/*
 	printf("[Bot-Purple] Direction = (%d, %d) !\n", direction.x, direction.y);

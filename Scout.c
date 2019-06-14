@@ -17,7 +17,7 @@ Node* berger_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strcmp(tmp->node->name, "green") == 0)// && NodeNotInBuff(berger_id, 3, tmp->node))
+		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)// && NodeNotInBuff(berger_id, 3, tmp->node))
 			return tmp->node;
 		tmp = tmp->next;
 	}
