@@ -229,5 +229,9 @@ int connectTo(char* ip, int port, char* name)
 	lwsl_err("Exiting\n");
 	lws_context_destroy(context);
 
+	SDL_Quit();
+	free(pRenderer);
+	NodeStack_clear(nodes);
+
   return 1;
 }

@@ -253,7 +253,12 @@ void bring_back(struct lws* wsi, Node* brebie)
 			vec.y = brebie->y - player->y;
 
 			drawDebugLine(World2Screen(GetNodePos(player)), brebie_screen, 255, 255, 0);
-			vec = rotate(vec, M_PI / 2 + 0.09);
+
+			Vec2 V; 
+			V.x = target.x - player->x;
+			V.y = target.y - player->y;
+
+			vec = calcAngle(vec, V) > 0 ? rotate(vec, M_PI / 2 + 0.09) : rotate(vec, -M_PI / 2 - 0.09);
 
 			Vec2 direction;
 			direction.x = vec.x + player->x;
@@ -309,11 +314,9 @@ void Berger(struct lws* wsi)
 		break;
 
 	case GETTING_INFO:
-		printf("[BOT-Purple] info state, deltatime=%d\n", ticks - purple_ticks);
 		target = NodeStack_get(nodes, purple_communication_target_id);
 		if(ticks - purple_ticks >= 20)
 		{
-			printf("[Bot-Purple] Info recevied : \n");
 			show_path();
 
 			direction = process_path();
@@ -332,7 +335,6 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL)
 			{
-				printf("[Bot-Purple] Bring back brebie !\n");
 				bring_back(wsi, brebie);
 			}
 			else
@@ -342,8 +344,6 @@ void Berger(struct lws* wsi)
 				new_pos.y = player->y + direction.y;
 				Move(wsi, new_pos);
 				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 0, 255);
-
-				//printf("[Bot-Purple] Going to (%d, %d)\n", direction.x, direction.y);
 			}
 		}
 		else
@@ -363,6 +363,8 @@ void Berger(struct lws* wsi)
 			Vec2 target = Vec2ftoVec2(GetTarget(brebie));
 			Vec2 coord = World2Screen(target);
 			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
+			if(distance(GetNodePos(player), target) > 150)
+				purple_status = BRING_BACK;
 		}
 		}
 		break;
