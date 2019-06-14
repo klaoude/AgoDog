@@ -25,6 +25,11 @@ Vec2 GetNodePos(Node* node)
 	return ret;
 }
 
+double norme(Vec2 vec)
+{
+	return sqrt(vec.x * vec.x + vec.y * vec.y);
+}
+
 unsigned char Vec2_isZero(Vec2 vec)
 {
 	return vec.x == 0 && vec.y == 0;

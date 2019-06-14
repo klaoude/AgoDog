@@ -72,7 +72,7 @@ void UpdateNodes(unsigned char* data)
 			strcpy(node->name, data + startNodePos + (i+1)*NodeSize + totalNameLength); //on copie le nom
 			totalNameLength += nameLength+1;//on augment la taille total des noms
 		
-			if(strcmp(node->name, BotName) == 0) //si la cellule est noter bot
+			if(strcmp(node->name, BotName) == 0) //si la cellule est notre bot
 			{
 				player = node;
 			}
@@ -99,6 +99,11 @@ void UpdateNodes(unsigned char* data)
 	{		
 		unsigned int nodeID;
 		memcpy(&nodeID, data + new_pos + sizeof(unsigned short) + j * sizeof(unsigned int), sizeof(unsigned int)); //on prend l'id
+		if(nodeID == player->nodeID)
+		{
+			printf("delete player ???\n");
+			player = NULL;
+		}
 		nodes = NodeStack_remove(nodes, nodeID); //on suprime de notre liste
 	}
 
@@ -122,8 +127,34 @@ double distance(Vec2 a, Vec2 b)
 	return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
 }
 
+Vec2 unitarise(Vec2 vec)
+{
+	Vec2 ret;
+	ret.x = vec.x / norme(vec);
+	ret.y = vec.y / norme(vec);
+	return ret;
+}
+
 Vec2 GetTarget(Node* brebie)
 {
+	Vec2 brebie_pos = GetNodePos(brebie);
+	Vec2 base; 
+	base.x = BASE_X;
+	base.y = BASE_Y;
+
+	Vec2 vect; 
+	vect.x = brebie_pos.x - base.x;
+	vect.y = brebie_pos.y - base.y;
+
+	Vec2 unit = unitarise(vect);
+	unit.x = brebie_pos.x + unit.x * (RAYON_BERGER + OFFSET);
+	unit.y = brebie_pos.y + unit.y * (RAYON_BERGER + OFFSET);
+
+	printf("vect = (%d, %d), unit = (%d, %d)\n", vect.x, vect.y, unit.x, unit.y);
+
+	return unit;
+
+	/*
 	//BUUUUUUG
 	Vec2 ret;
 
@@ -140,6 +171,7 @@ Vec2 GetTarget(Node* brebie)
 	printf("[Bot-Purple] GetTarget Rb = %f, Ab = %f, ret = (%d, %d)\n", rb, ab, ret.x, ret.y);
 
 	return ret;
+	*/
 }
 
 Node* scout_in_fov()
@@ -192,21 +224,24 @@ Vec2 process_path()
 
 	sorted_counter--;
 
-	printf("[Bot-Purple] conteur = %d\n", sorted_counter);
-
-	printf("[Bot-Purple] sorted Trajet viewer !\n");
-	for(int i = 0; i < sorted_counter; i++)
-		printf("(%d, %d) -> ", sorted_path[i].x, sorted_path[i].y);
-	printf("\n-------------------------------------\n");
-
 	Vec2 direction = Moyenne(sorted_path, sorted_counter);
 
+	Vec2 node_pos = GetNodePos(player);
+
+	Vec2 ret;
+	ret.x = direction.x - node_pos.x;
+	ret.y = node_pos.y - direction.y;
+
+	return ret;
+
+	/*
 	printf("[Bot-Purple] Direction = (%d, %d) !\n", direction.x, direction.y);
 
 	direction.x = (direction.x - WORLD_X) * 10;
 	direction.y = (WORLD_Y - direction.y) * 10;
 
 	return direction;
+	*/
 }
 
 Vec2 rotate(Vec2 vec, double angle)
@@ -217,12 +252,17 @@ Vec2 rotate(Vec2 vec, double angle)
 	return ret;
 }
 
+unsigned char inRange(Vec2 target, Node* berger)
+{
+	return (berger->x - target.x < CARRE && berger->x - target.x > -CARRE && berger->y - target.y < CARRE && berger->y - target.y > -CARRE);
+}
+
 void bring_back(struct lws* wsi, Node* brebie)
 {
 	Vec2 U,V;
 	Vec2 target = GetTarget(brebie);
 	printf("[Bot-Purple] brebie [%d](%d, %d) target (%d, %d)\n", brebie->nodeID, brebie->x, brebie->y, target.x, target.y);
-	if(!equalsVec2(GetNodePos(player), target))
+	if(!inRange(target, player))
 	{
 		if(distance(GetNodePos(brebie), GetNodePos(player)) < RAYON_BERGER + OFFSET)
 		{
@@ -232,7 +272,7 @@ void bring_back(struct lws* wsi, Node* brebie)
 			V.y = target.y - player->y;
 			double angle = calcAngle(U, V);
 
-			Vec2 dest = angle > 0 ? rotate(target, 45) : rotate(target, -45);
+			Vec2 dest = angle > 0 ? rotate(target, 50) : rotate(target, -50);
 			Move(wsi, dest);
 		}
 		else
@@ -265,6 +305,8 @@ void Berger(struct lws* wsi)
 
 		Move(wsi, RDV);
 
+		drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
+
 		if(equalsVec2(GetNodePos(player), RDV))
 		{
 			purple_status = LISTEN;
@@ -285,7 +327,7 @@ void Berger(struct lws* wsi)
 	case GETTING_INFO:
 		printf("[BOT-Purple] info state, deltatime=%d\n", ticks - purple_ticks);
 		target = NodeStack_get(nodes, purple_communication_target_id);
-		if(ticks - purple_ticks > 20)
+		if(ticks - purple_ticks >= 20)
 		{
 			printf("[Bot-Purple] Info recevied : \n");
 			show_path();
@@ -297,9 +339,8 @@ void Berger(struct lws* wsi)
 		else if(target != NULL)
 		{
 			purple_communication_array[ticks - purple_ticks] = GetNodePos(target);
-			debugNode(target);
+			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(GetNodePos(target)), 0, 255, 0);
 		}
-
 		break;
 
 	case BRING_BACK:
@@ -307,12 +348,17 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL)
 			{
-				//printf("[Bot-Purple] Bring back brebie !\n");
+				printf("[Bot-Purple] Bring back brebie !\n");
 				bring_back(wsi, brebie);
 			}
 			else
 			{
-				Move(wsi, direction);
+				Vec2 new_pos;
+				new_pos.x = player->x + direction.x;
+				new_pos.y = player->y + direction.y;
+				Move(wsi, new_pos);
+				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 255, 0);
+
 				//printf("[Bot-Purple] Going to (%d, %d)\n", direction.x, direction.y);
 			}
 		}

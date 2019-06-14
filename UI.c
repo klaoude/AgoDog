@@ -6,6 +6,11 @@ void DrawCircle(Circle* circle)
 	filledCircleRGBA(pRenderer, circle->x, circle->y, circle->radius, circle->color.r, circle->color.g, circle->color.b, circle->color.a);
 }
 
+void drawDebugLine(Vec2 start, Vec2 end, char r, char g, char b)
+{
+	aalineRGBA(pRenderer, start.x, start.y, end.x, end.y, r, g, b, 255);
+}
+
 void drawDebugCircle(int x, int y, short radius, char r, char g, char b)
 {
 	aacircleRGBA(pRenderer, x, y, radius, r, g, b, 255);
@@ -40,8 +45,9 @@ void Clear()
 
 Vec2 getZoom()
 {
+	printf("zoom, player = %p\n", player);
 	Vec2 ret;
-	memset(&ret, 0, sizeof(Vec2));
+	ret.x = 1; ret.y = 1;
 
 	if(!initMap)
 	{
@@ -119,7 +125,7 @@ void DrawNode(Node* node)
 
 	DrawCircle(&nodeCircle);
 
-	if(node->type == PLAYER)
+	/*if(node->type == PLAYER)
 	{
 		char* toWrite = malloc(strlen(node->name) + 1 + 6);
 		sprintf(toWrite, "%s [%d]", node->name, node->size);
@@ -143,7 +149,7 @@ void DrawNode(Node* node)
 
 		SDL_FreeSurface(textSurface);
 		SDL_DestroyTexture(texture);
-	}
+	}*/
 }
 
 void DrawAllNodes()

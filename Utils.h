@@ -57,6 +57,7 @@ typedef struct NodeStack
 Vec2 GetNodePos(Node* node);
 unsigned char Vec2_isZero(Vec2 vec);
 unsigned char equalsVec2(Vec2 a, Vec2 b);
+double norme(Vec2 vec);
 
 void NodeStack_push(NodeStack** list, Node* elem);
 void NodeStack_clear(NodeStack* list);

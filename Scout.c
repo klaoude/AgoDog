@@ -115,7 +115,7 @@ void Scout(struct lws* wsi)
 	case COMMUNICATING:
 		//printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
 
-		if(ticks - blue_ticks_start >= 2)
+		if(ticks - blue_ticks_start >= 2  && saved_brebie != NULL)
 		{
 			if(ticks - blue_ticks_start >= 15)
 			{

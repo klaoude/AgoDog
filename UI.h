@@ -8,8 +8,8 @@
 #include "Utils.h"
 #include "IA.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGTH 600
+#define WINDOW_WIDTH 800*2
+#define WINDOW_HEIGTH 600*2
 
 typedef struct Color
 {
@@ -29,6 +29,10 @@ SDL_Window* pWindow;
 SDL_Renderer* pRenderer;
 
 TTF_Font* pFont;
+
+void drawDebugLine(Vec2 start, Vec2 end, char r, char g, char b);
+
+Vec2 World2Screen(Vec2 pos);
 
 int InitUI();
 void Loop(int* exit);
