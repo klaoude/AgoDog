@@ -5,7 +5,7 @@
 #include "WS.h"
 #include "Scout.h"
 
-#define OFFSET 20
+#define OFFSET 100
 #define RAYON_BERGER 200
 
 #define BASE_X 0

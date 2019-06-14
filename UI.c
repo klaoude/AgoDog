@@ -16,6 +16,19 @@ void drawDebugCircle(int x, int y, short radius, char r, char g, char b)
 	aacircleRGBA(pRenderer, x, y, radius, r, g, b, 255);
 }
 
+void drawDebugRect(Vec2 start, Vec2 end, char r, char g, char b)
+{
+	Vec2 pos1; pos1.x = start.x + end.x; pos1.y = start.x;
+	drawDebugLine(start, pos1, r, g, b);
+
+	drawDebugLine(pos1, end, r, g, b);
+
+	pos1.x = start.x; pos1.y = start.y + end.y;
+	drawDebugLine(end, pos1, r, g, b);
+
+	drawDebugLine(pos1, start, r, g, b);
+}
+
 int InitUI()
 {
 	if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -45,7 +58,6 @@ void Clear()
 
 Vec2 getZoom()
 {
-	printf("zoom, player = %p\n", player);
 	Vec2 ret;
 	ret.x = 1; ret.y = 1;
 

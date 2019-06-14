@@ -31,6 +31,8 @@ SDL_Renderer* pRenderer;
 TTF_Font* pFont;
 
 void drawDebugLine(Vec2 start, Vec2 end, char r, char g, char b);
+void drawDebugCircle(int x, int y, short radius, char r, char g, char b);
+void drawDebugRect(Vec2 start, Vec2 end, char r, char g, char b);
 
 Vec2 World2Screen(Vec2 pos);
 
@@ -41,7 +43,5 @@ void Draw();
 
 void minimap_clear();
 void minimap_draw();
-
-void drawDebugCircle(int x, int y, short radius, char r, char g, char b);
 
 #endif

@@ -257,10 +257,23 @@ unsigned char inRange(Vec2 target, Node* berger)
 	return (berger->x - target.x < CARRE && berger->x - target.x > -CARRE && berger->y - target.y < CARRE && berger->y - target.y > -CARRE);
 }
 
+void show_debug_target(Vec2 target)
+{
+	Vec2 start; start.x = target.x - CARRE / 2; start.y = target.y - CARRE / 2;
+	Vec2 end; end.x = target.x + CARRE / 2; end.y = target.y + CARRE / 2;
+
+	drawDebugRect(World2Screen(start), World2Screen(end), 255, 0, 0);
+}
+
 void bring_back(struct lws* wsi, Node* brebie)
 {
 	Vec2 U,V;
 	Vec2 target = GetTarget(brebie);
+	show_debug_target(target);
+
+	Vec2 brebie_screen = World2Screen(GetNodePos(brebie));
+	drawDebugCircle(brebie_screen.x, brebie_screen.y, RAYON_BERGER + OFFSET, 0, 0, 0);
+
 	printf("[Bot-Purple] brebie [%d](%d, %d) target (%d, %d)\n", brebie->nodeID, brebie->x, brebie->y, target.x, target.y);
 	if(!inRange(target, player))
 	{
