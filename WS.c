@@ -179,7 +179,7 @@ int connectTo(char* ip, int port, char* name)
 	if(isUI == 1)
 		InitUI();
 
-  struct lws_context_creation_info info;
+  	struct lws_context_creation_info info;
 	struct lws_client_connect_info i;
 
 	struct lws_context *context;
@@ -194,7 +194,7 @@ int connectTo(char* ip, int port, char* name)
 
 	i.port = port;
 	i.origin = "agar.io";
-  BotName = name;
+  	BotName = name;
 
 	if(lws_parse_uri(ip, &protocol, &i.address, &i.port, &temp))
 		;

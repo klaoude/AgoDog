@@ -67,6 +67,9 @@ char NodeStack_find(NodeStack* list, unsigned int id);
 size_t NodeStack_length(NodeStack* list);
 void NodeStack_update(NodeStack** list, Node* elem);
 
+Vec2f Vec2toVec2f(Vec2 vec);
+Vec2 Vec2ftoVec2(Vec2f vec);
+
 void printHex(char* data, size_t size);
 void debugNode(Node* node);
 void printNodeStack(NodeStack* ns);

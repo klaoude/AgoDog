@@ -148,6 +148,24 @@ void NodeStack_update(NodeStack** list, Node* elem)
 	NodeStack_push(list, elem);
 }
 
+Vec2f Vec2toVec2f(Vec2 vec)
+{
+	Vec2f ret;
+	ret.x = (double)vec.x;
+	ret.y = (double)vec.y;
+
+	return ret;
+}
+
+Vec2 Vec2ftoVec2(Vec2f vec)
+{
+	Vec2 ret;
+	ret.x = (int)vec.x;
+	ret.y = (int)vec.y;
+
+	return ret;
+}
+
 void printHex(char* data, size_t size)
 {
 	int j = 0;

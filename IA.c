@@ -127,15 +127,15 @@ double distance(Vec2 a, Vec2 b)
 	return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
 }
 
-Vec2 unitarise(Vec2 vec)
+Vec2f unitarise(Vec2 vec)
 {
-	Vec2 ret;
+	Vec2f ret;
 	ret.x = vec.x / norme(vec);
 	ret.y = vec.y / norme(vec);
 	return ret;
 }
 
-Vec2 GetTarget(Node* brebie)
+Vec2f GetTarget(Node* brebie)
 {
 	Vec2 brebie_pos = GetNodePos(brebie);
 	Vec2 base; 
@@ -146,32 +146,11 @@ Vec2 GetTarget(Node* brebie)
 	vect.x = brebie_pos.x - base.x;
 	vect.y = brebie_pos.y - base.y;
 
-	Vec2 unit = unitarise(vect);
-	unit.x = brebie_pos.x + unit.x * (RAYON_BERGER + OFFSET);
-	unit.y = brebie_pos.y + unit.y * (RAYON_BERGER + OFFSET);
-
-	printf("vect = (%d, %d), unit = (%d, %d)\n", vect.x, vect.y, unit.x, unit.y);
+	Vec2f unit = unitarise(vect);
+	unit.x = brebie_pos.x + unit.x * (RAYON_BERGER + OFFSET + 40);
+	unit.y = brebie_pos.y + unit.y * (RAYON_BERGER + OFFSET + 40);
 
 	return unit;
-
-	/*
-	//BUUUUUUG
-	Vec2 ret;
-
-	Vec2 dest;
-	dest.x = BASE_X; 
-	dest.y = BASE_Y;
-	
-	double rb = distance(GetNodePos(brebie), dest);
-	double ab = brebie->x - BASE_X == 0 ? 0 : tan((BASE_Y - brebie->y) / (brebie->x - BASE_X));
-
-	ret.x = (rb + RAYON_BERGER + OFFSET)*cos(ab);
-	ret.y = (rb + RAYON_BERGER + OFFSET)*sin(ab);
-
-	printf("[Bot-Purple] GetTarget Rb = %f, Ab = %f, ret = (%d, %d)\n", rb, ab, ret.x, ret.y);
-
-	return ret;
-	*/
 }
 
 Node* scout_in_fov()
@@ -224,36 +203,19 @@ Vec2 process_path()
 
 	sorted_counter--;
 
-	//Vec2 direction = Moyenne(sorted_path, sorted_counter);
 	Vec2 direction;
 	direction.x =sorted_path[sorted_counter-1].x - sorted_path[0].x;
 	direction.y = sorted_path[sorted_counter-1].y - sorted_path[0].y;
 	printf("direction = [%d ; %d]\n", direction.x, direction.y);
 
-	/*Vec2 node_pos = GetNodePos(player);
-
-	Vec2 ret;
-	ret.x = direction.x - node_pos.x;
-	ret.y = node_pos.y - direction.y;
-
-	return ret;*/
 	return direction;
-
-	/*
-	printf("[Bot-Purple] Direction = (%d, %d) !\n", direction.x, direction.y);
-
-	direction.x = (direction.x - WORLD_X) * 10;
-	direction.y = (WORLD_Y - direction.y) * 10;
-
-	return direction;
-	*/
 }
 
 Vec2 rotate(Vec2 vec, double angle)
 {
 	Vec2 ret;
-	ret.x = vec.x * cos(angle) + vec.y * sin(angle);
-	ret.y = (-vec.y) * sin(angle) + vec.x * sin(angle);
+	ret.x = vec.x * cos(angle) - vec.y * sin(angle);
+	ret.y = (vec.y) * sin(angle) + vec.x * sin(angle);
 	return ret;
 }
 
@@ -273,35 +235,39 @@ void show_debug_target(Vec2 target)
 void bring_back(struct lws* wsi, Node* brebie)
 {
 	Vec2 U,V;
-	Vec2 target = GetTarget(brebie);
-	show_debug_target(target);
+
+	Vec2 target = Vec2ftoVec2(GetTarget(brebie));
+	Vec2 coord = World2Screen(target);
+	drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
 
 	Vec2 brebie_screen = World2Screen(GetNodePos(brebie));
 	drawDebugCircle(brebie_screen.x, brebie_screen.y, RAYON_BERGER + OFFSET, 0, 0, 0);
 
 	printf("[Bot-Purple] brebie [%d](%d, %d) target (%d, %d)\n", brebie->nodeID, brebie->x, brebie->y, target.x, target.y);
-	if(!inRange(target, player))
+	if(!equalsVec2(target, GetNodePos(player)))
 	{
 		if(distance(GetNodePos(brebie), GetNodePos(player)) < RAYON_BERGER + OFFSET)
 		{
-			U.x = brebie->x - player->x;
-			U.y = brebie->y - player->y;
-			V.x = target.x - player->x;
-			V.y = target.y - player->y;
-			double angle = calcAngle(U, V);
+			Vec2 vec;
+			vec.x = brebie->x - player->x;
+			vec.y = brebie->y - player->y;
 
-			Vec2 dest = angle > 0 ? rotate(target, 50) : rotate(target, -50);
-			Move(wsi, dest);
+			drawDebugLine(World2Screen(GetNodePos(player)), brebie_screen, 255, 255, 0);
+			vec = rotate(vec, M_PI / 2 + 0.09);
+
+			Vec2 direction;
+			direction.x = vec.x + player->x;
+			direction.y = vec.y + player->y;
+
+			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(direction), 255, 0, 255);
+			Move(wsi, direction);
 		}
 		else
 			Move(wsi, target);
 	}
 	else
 	{
-		Vec2 base;
-		base.x = BASE_X;
-		base.y = BASE_Y;
-		Move(wsi, base);
+		purple_status = RAMENEZ;
 	}
 	
 }
@@ -375,7 +341,7 @@ void Berger(struct lws* wsi)
 				new_pos.x = player->x + direction.x;
 				new_pos.y = player->y + direction.y;
 				Move(wsi, new_pos);
-				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 255, 0);
+				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 0, 255);
 
 				//printf("[Bot-Purple] Going to (%d, %d)\n", direction.x, direction.y);
 			}
@@ -384,6 +350,21 @@ void Berger(struct lws* wsi)
 		{
 			printf("[Bot-Purple] Bug !\n");
 		}		
+		break;
+	
+	case RAMENEZ:
+		{
+		Vec2 base;
+		base.x = BASE_X;
+		base.y = BASE_Y;
+		Move(wsi, base);
+		if((brebie = brebie_in_fov()) != NULL)
+		{
+			Vec2 target = Vec2ftoVec2(GetTarget(brebie));
+			Vec2 coord = World2Screen(target);
+			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
+		}
+		}
 		break;
 	}
 }

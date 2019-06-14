@@ -5,11 +5,11 @@
 #include "WS.h"
 #include "Scout.h"
 
-#define OFFSET 100
+#define OFFSET 10
 #define RAYON_BERGER 200
 
 #define BASE_X 0
-#define BASE_Y 4500
+#define BASE_Y 3000
 
 #define CARRE 5
 
@@ -40,7 +40,8 @@ typedef enum PURPLE_STATE
     LISTEN,
     BRING_BACK,
     GOTO,
-    GETTING_INFO
+    GETTING_INFO,
+    RAMENEZ
 } PURPLE_STATE;
 
 PURPLE_STATE purple_status;
