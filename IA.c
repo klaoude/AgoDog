@@ -146,11 +146,7 @@ Vec2f GetTarget(Node* brebie)
 	vect.x = brebie_pos.x - base.x;
 	vect.y = brebie_pos.y - base.y;
 
-	Vec2f unit = unitarise(vect);
-	unit.x = brebie_pos.x + unit.x * (RAYON_BERGER + OFFSET + 40);
-	unit.y = brebie_pos.y + unit.y * (RAYON_BERGER + OFFSET + 40);
-
-	return unit;
+	return unitarise(vect);
 }
 
 Node* scout_in_fov()
@@ -236,7 +232,10 @@ void bring_back(struct lws* wsi, Node* brebie)
 {
 	Vec2 U,V;
 
-	Vec2 target = Vec2ftoVec2(GetTarget(brebie));
+	Vec2f unit = GetTarget(brebie);
+	unit.x = brebie->x + unit.x * (RAYON_BERGER + OFFSET + 40);
+	unit.y = brebie->y + unit.y * (RAYON_BERGER + OFFSET + 40);
+	Vec2 target = Vec2ftoVec2(unit);
 	Vec2 coord = World2Screen(target);
 	drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
 
@@ -357,14 +356,23 @@ void Berger(struct lws* wsi)
 		Vec2 base;
 		base.x = BASE_X;
 		base.y = BASE_Y;
-		Move(wsi, base);
+
+		
 		if((brebie = brebie_in_fov()) != NULL)
 		{
-			Vec2 target = Vec2ftoVec2(GetTarget(brebie));
+			Vec2f unit = GetTarget(brebie);
+			unit.x = brebie->x + unit.x * (RAYON_BERGER - 21);
+			unit.y = brebie->y + unit.y * (RAYON_BERGER - 21);
+			Vec2 target = Vec2ftoVec2(unit);
 			Vec2 coord = World2Screen(target);
 			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
-			if(distance(GetNodePos(player), target) > 150)
-				purple_status = BRING_BACK;
+			if(distance(GetNodePos(player), target) > 50){
+				//purple_status = BRING_BACK;
+				Move(wsi, target);
+			}
+			else{
+				Move(wsi, base);
+			}
 		}
 		}
 		break;
