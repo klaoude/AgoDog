@@ -285,6 +285,9 @@ void Berger(struct lws* wsi)
 	Node* target = NULL;
 	static Vec2 direction;
 	Node* brebie = NULL;
+	Vec2 base;
+		base.x = BASE_X;
+		base.y = BASE_Y;
 
 	switch(purple_status)
 	{
@@ -299,6 +302,11 @@ void Berger(struct lws* wsi)
 		{
 			purple_status = LISTEN;
 			printf("[Bot-Purple] Arrived at RDV !\n");
+		}
+
+		if((brebie = brebie_in_fov()) != NULL && distance(GetNodePos(brebie), base)> 900){
+			direction = GetNodePos(brebie);
+			purple_status = BRING_BACK;
 		}
 		break;
 
@@ -351,13 +359,7 @@ void Berger(struct lws* wsi)
 		}		
 		break;
 	
-	case RAMENEZ:
-		{
-		Vec2 base;
-		base.x = BASE_X;
-		base.y = BASE_Y;
-
-		
+	case RAMENEZ:		
 		if((brebie = brebie_in_fov()) != NULL)
 		{
 			Vec2f unit = GetTarget(brebie);
@@ -367,13 +369,14 @@ void Berger(struct lws* wsi)
 			Vec2 coord = World2Screen(target);
 			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
 			if(distance(GetNodePos(player), target) > 50){
-				//purple_status = BRING_BACK;
 				Move(wsi, target);
 			}
 			else{
 				Move(wsi, base);
 			}
 		}
+		if(distance(GetNodePos(player), base) < 900){
+			purple_status = GOTO;
 		}
 		break;
 	}
