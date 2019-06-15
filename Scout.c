@@ -5,7 +5,7 @@ Node* brebie_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0) //&& notInBuff(saw_id, 10, tmp->node->nodeID))
+		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && !NodeStack_find(saved_brebie, tmp->node->nodeID)) //&& notInBuff(saw_id, 10, tmp->node->nodeID))
 			return tmp->node;
 		tmp = tmp->next;
 	}
@@ -70,16 +70,16 @@ void Scout(struct lws* wsi)
 	Node* brebie = NULL;
 	Node* berger = NULL;
 
+	if((brebie = brebie_in_fov()) != NULL)
+		NodeStack_update(&saved_brebie, brebie);
+
     updateLifeTime();
 
 	switch(iaStatus)
 	{
 	case EXPLORE:
-		if((brebie = brebie_in_fov()) != NULL)
+		if(saved_brebie != NULL)
 		{
-			Node* brebie_copie = malloc(sizeof(Node));
-			memcpy(brebie_copie, brebie, sizeof(Node));
-			NodeStack_update(&saved_brebie, brebie_copie);
 			iaStatus = GOTORDV;
 			printf("[BOT-Blue] Brebie found !!\n");
 		}
@@ -114,18 +114,17 @@ void Scout(struct lws* wsi)
 		break;
 	case COMMUNICATING:
 		//printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
-
-		if(ticks - blue_ticks_start >= 2  && saved_brebie != NULL)
+		brebie = NodeStack_getNearest(saved_brebie, player);
+		if(ticks - blue_ticks_start >= 2  && brebie != NULL)
 		{
 			if(ticks - blue_ticks_start >= 15)
 			{
-                printf("[Bot-Blue] Sended direction (%d, %d)\n", saved_brebie->node->x, saved_brebie->node->y);
-				saw_id[saw_i++] = saved_brebie->node->nodeID;
-				saved_brebie = NodeStack_remove(saved_brebie, saved_brebie->node->nodeID);
+                printf("[Bot-Blue] Sended direction (%d, %d)\n", brebie->x, brebie->y);
+				saved_brebie = NodeStack_remove(saved_brebie, brebie->nodeID);
                 berger_id[berger_i].node = berger;
                 berger_id[berger_i++].time = 200;
                 if(ticks - blue_ticks_start >= 20) ;
-                //else iaStatus = EXPLORE;
+                else iaStatus = EXPLORE;
 			}
 			else
 			{

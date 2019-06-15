@@ -122,11 +122,6 @@ void Move(struct lws *wsi, Vec2 pos)
 	sendCommand(wsi, packet, 13);
 }
 
-double distance(Vec2 a, Vec2 b)
-{
-	return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
-}
-
 Vec2f unitarise(Vec2 vec)
 {
 	Vec2f ret;
@@ -202,7 +197,6 @@ Vec2 process_path()
 	Vec2 direction;
 	direction.x =sorted_path[sorted_counter-1].x - sorted_path[0].x;
 	direction.y = sorted_path[sorted_counter-1].y - sorted_path[0].y;
-	printf("direction = [%d ; %d]\n", direction.x, direction.y);
 
 	return direction;
 }
@@ -242,7 +236,6 @@ void bring_back(struct lws* wsi, Node* brebie)
 	Vec2 brebie_screen = World2Screen(GetNodePos(brebie));
 	drawDebugCircle(brebie_screen.x, brebie_screen.y, RAYON_BERGER + OFFSET, 0, 0, 0);
 
-	printf("[Bot-Purple] brebie [%d](%d, %d) target (%d, %d)\n", brebie->nodeID, brebie->x, brebie->y, target.x, target.y);
 	if(!equalsVec2(target, GetNodePos(player)))
 	{
 		if(distance(GetNodePos(brebie), GetNodePos(player)) < RAYON_BERGER + OFFSET)
@@ -352,11 +345,7 @@ void Berger(struct lws* wsi)
 				Move(wsi, new_pos);
 				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 0, 255);
 			}
-		}
-		else
-		{
-			printf("[Bot-Purple] Bug !\n");
-		}		
+		}	
 		break;
 	
 	case RAMENEZ:		
@@ -368,12 +357,18 @@ void Berger(struct lws* wsi)
 			Vec2 target = Vec2ftoVec2(unit);
 			Vec2 coord = World2Screen(target);
 			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
+<<<<<<< Updated upstream
 			if(distance(GetNodePos(player), target) > 50){
 				Move(wsi, target);
 			}
 			else{
 				Move(wsi, base);
 			}
+=======
+			
+			if(distance(GetNodePos(player), target) > 150)
+				purple_status = BRING_BACK;
+>>>>>>> Stashed changes
 		}
 		if(distance(GetNodePos(player), base) < 900){
 			purple_status = GOTO;

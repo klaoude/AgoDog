@@ -58,10 +58,12 @@ Vec2 GetNodePos(Node* node);
 unsigned char Vec2_isZero(Vec2 vec);
 unsigned char equalsVec2(Vec2 a, Vec2 b);
 double norme(Vec2 vec);
+double distance(Vec2 a, Vec2 b);
 
 void NodeStack_push(NodeStack** list, Node* elem);
 void NodeStack_clear(NodeStack* list);
 Node* NodeStack_get(NodeStack* list, unsigned int id);
+Node* NodeStack_getNearest(NodeStack* list, Node* node);
 NodeStack* NodeStack_remove(NodeStack* list, unsigned int id);
 char NodeStack_find(NodeStack* list, unsigned int id);
 size_t NodeStack_length(NodeStack* list);

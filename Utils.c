@@ -106,6 +106,41 @@ NodeStack* NodeStack_remove(NodeStack* list, unsigned int id)
 	return list;
 }
 
+double distance(Vec2 a, Vec2 b)
+{
+	return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
+}
+
+Node* NodeStack_getNearest(NodeStack* list, Node* node)
+{
+	if(node == NULL)
+		return NULL;
+
+	double bestDist = 9999;
+	Node* ret = NULL;
+	NodeStack* tmp = list;
+	while(tmp != NULL)
+	{
+		Node* curr = tmp->node;
+		if(curr == NULL)
+		{
+			tmp = tmp->next;
+			continue;
+		}
+
+		double dist = distance(GetNodePos(curr), GetNodePos(node));
+		if(dist < bestDist)
+		{
+			bestDist = dist;
+			ret = curr;
+		}
+
+		tmp = tmp->next;
+	}
+
+	return ret;
+}
+
 char NodeStack_find(NodeStack* list, unsigned int id)
 {
 	NodeStack* tmp = list;
