@@ -116,7 +116,7 @@ Node* NodeStack_getNearest(NodeStack* list, Node* node)
 	if(node == NULL)
 		return NULL;
 
-	double bestDist = 9999;
+	double bestDist = 999999;
 	Node* ret = NULL;
 	NodeStack* tmp = list;
 	while(tmp != NULL)

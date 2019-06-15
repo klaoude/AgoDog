@@ -16,6 +16,7 @@ void InitMap(int x, int y)
 			map[i][j] = 0;
 
 	initMap = 1;
+	saved_brebie = NULL;
 
 	WORLD_X = x;
 	WORLD_Y = y;
