@@ -357,18 +357,12 @@ void Berger(struct lws* wsi)
 			Vec2 target = Vec2ftoVec2(unit);
 			Vec2 coord = World2Screen(target);
 			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
-<<<<<<< Updated upstream
 			if(distance(GetNodePos(player), target) > 50){
 				Move(wsi, target);
 			}
 			else{
 				Move(wsi, base);
 			}
-=======
-			
-			if(distance(GetNodePos(player), target) > 150)
-				purple_status = BRING_BACK;
->>>>>>> Stashed changes
 		}
 		if(distance(GetNodePos(player), base) < 900){
 			purple_status = GOTO;

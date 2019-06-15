@@ -115,7 +115,8 @@ void Scout(struct lws* wsi)
 	case COMMUNICATING:
 		//printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
 		brebie = NodeStack_getNearest(saved_brebie, player);
-		if(ticks - blue_ticks_start >= 2  && brebie != NULL)
+		debugNode(brebie);
+		if(ticks - blue_ticks_start >= 2 && brebie != NULL)
 		{
 			if(ticks - blue_ticks_start >= 15)
 			{
@@ -128,7 +129,7 @@ void Scout(struct lws* wsi)
 			}
 			else
 			{
-				Move(wsi, GetNodePos(saved_brebie->node));
+				Move(wsi, GetNodePos(brebie));
 				//debugNode(saved_brebie->node);
 			}
 		}
