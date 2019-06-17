@@ -24,4 +24,6 @@ unsigned int blue_ticks_start;
 
 unsigned char** map;
 
+Node* berger_in_fov();
+
 #endif

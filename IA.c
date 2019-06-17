@@ -37,6 +37,8 @@ void InitIA()
 {
 	nodes = NULL;
 
+	purple_follow_id = 0;
+
 	ticks = 0;
 
 	iaStatus = EXPLORE;
@@ -311,6 +313,7 @@ Vec2 fixTarget(Vec2* target)
 
 void bring_back(struct lws* wsi, Node* brebie)
 {
+	purple_follow_id = brebie->nodeID;
 	Vec2 U,V;
 
 	Vec2f unit = GetTarget(brebie);
@@ -372,6 +375,7 @@ void Berger(struct lws* wsi)
 	Node* target = NULL;
 	static Vec2 direction;
 	Node* brebie = NULL;
+	Node* berger = NULL;
 	Vec2 base;
 	base.x = BASE_X;
 	base.y = BASE_Y;
@@ -397,7 +401,8 @@ void Berger(struct lws* wsi)
 			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
 		}
 
-		if((brebie = brebie_in_fov()) != NULL && distance(GetNodePos(brebie), base)> 900){
+		if((brebie = brebie_in_fov()) != NULL && distance(GetNodePos(brebie), base)> 900)
+		{
 			direction = GetNodePos(brebie);
 			purple_status = BRING_BACK;
 		}
@@ -435,7 +440,11 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL)
 			{
-				bring_back(wsi, brebie);
+				if((berger = berger_in_fov()) != NULL && distance(GetNodePos(berger), GetNodePos(brebie)) < distance(GetNodePos(player), GetNodePos(brebie)) )
+				{
+					purple_status = GOTO;
+				}
+				else bring_back(wsi, brebie);
 			}
 			else
 			{
@@ -469,6 +478,7 @@ void Berger(struct lws* wsi)
 		}
 		if(distance(GetNodePos(player), base) < 900){
 			purple_status = GOTO;
+			purple_follow_id = 0;
 		}
 		break;
 	}
