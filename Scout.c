@@ -121,6 +121,27 @@ Node* getNearestBerger(Node* node)
 	return &near;
 }
 
+void checkScoutedMap()
+{
+	for(int y=1; y <= WORLD_Y / DIV_SCOUT -1; y+=2)
+	{
+		for(int x=1; x <= WORLD_X / DIV_SCOUT -1; x++)
+		{
+			if(map[y][x] == 0)
+			{
+				return;
+			}
+		}
+	}
+	for(int y=0; y <= WORLD_Y / DIV_SCOUT -1; y++)
+	{
+		for(int x=0; x <= WORLD_X / DIV_SCOUT -1; x++)
+		{
+			map[y][x] = 0;
+		}
+	}
+}
+
 void Scout(struct lws* wsi)
 {
 	if(player == NULL || initMap == 0)
@@ -142,6 +163,7 @@ void Scout(struct lws* wsi)
 		}
 		else
 		{
+			checkScoutedMap();
 			Vec2 pos = GetNodePos(player);
 
 			Vec2 next = GetNextUnseenRegion(pos);
