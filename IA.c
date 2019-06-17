@@ -114,7 +114,7 @@ void UpdateNodes(unsigned char* data)
 	{		
 		unsigned int nodeID;
 		memcpy(&nodeID, data + new_pos + sizeof(unsigned short) + j * sizeof(unsigned int), sizeof(unsigned int)); //on prend l'id
-		if(nodeID == player->nodeID)
+		if(player != NULL && nodeID == player->nodeID)
 		{
 			printf("delete player ???\n");
 			player = NULL;

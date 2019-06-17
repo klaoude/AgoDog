@@ -146,25 +146,14 @@ void Scout(struct lws* wsi)
 
 			Vec2 next = GetNextUnseenRegion(pos);
 			Move(wsi, next);
-			for(int y = 0; y<6 ; y++){
-					printf("[");
-					for(int x = 0; x<9; x++){
-						printf("[%d]", map[y][x]);
-					}
-					printf("]\n");
-				}
-				printf("\n");
 		}		
 		break;
 	case GOTORDV:
-		printf("gotordv\n");
 		if(distance(RDV, GetNodePos(player)) < 450)
 		{
 			Vec2 rdv = getRDVPoint();
-			printf("[Bot-Blue] Near rdv point, goto (%d, %d)\n", rdv.x, rdv.y);
 			if(equalsVec2(rdv, GetNodePos(player)))
 			{
-				printf("[Bot-Blue] Arrived at RDV. Waiting for berger...\n");
 				if((berger = berger_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)))
 				{
 					iaStatus = COMMUNICATING;
@@ -193,9 +182,9 @@ void Scout(struct lws* wsi)
 		break;
 	case COMMUNICATING:
 		//printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
-		//printNodeStack(saved_brebie);
+		printNodeStack(saved_brebie);
 		brebie = NodeStack_getNearest(saved_brebie, player);
-		//debugNode(brebie);
+		debugNode(brebie);
 		if(ticks - blue_ticks_start >= 2 && brebie != NULL)
 		{
 			if(ticks - blue_ticks_start >= 15)
