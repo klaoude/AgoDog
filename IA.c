@@ -5,6 +5,11 @@ double calcAngle(Vec2 u, Vec2 v)
 	return acos((u.x * v.x + u.y * v.y) / (sqrt(u.x* u.x + u.y * u.y) * sqrt(v.x*v.x + v.y*v.y)));
 }
 
+unsigned char isNearWall(Node* node, unsigned int x, unsigned int y)
+{
+	return node->x < x || WORLD_X - node->x < x || node->y < y || WORLD_Y - node->y < y;
+}
+
 void InitMap(int x, int y)
 {
 	map = (unsigned char**)malloc(y / 100 * sizeof(unsigned char *));
@@ -41,6 +46,20 @@ void InitIA()
 	purple_communication_target_id = 0;
 }
 
+Node* getHighestId(char* name)
+{
+	NodeStack* tmp = nodes;
+	unsigned short maxID = 0;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && strcmp(name, tmp->node->name) == 0)
+			maxID = tmp->node->nodeID;
+		tmp = tmp->next;
+	}
+
+	return NodeStack_get(nodes, maxID);
+}
+
 void UpdateNodes(unsigned char* data)
 {
 	//NodeStack_clear(nodes);
@@ -70,11 +89,6 @@ void UpdateNodes(unsigned char* data)
 			node->name = malloc(nameLength+1); //on aloue la memoire pour le nom
 			strcpy(node->name, data + startNodePos + (i+1)*NodeSize + totalNameLength); //on copie le nom
 			totalNameLength += nameLength+1;//on augment la taille total des noms
-		
-			if(strcmp(node->name, BotName) == 0) //si la cellule est notre bot
-			{
-				player = node;
-			}
 		}
 		else if(node->flags&0x1)
 			node->type = VIRUS;
@@ -88,6 +102,8 @@ void UpdateNodes(unsigned char* data)
 		memcpy(&end, data + startNodePos + (i+1)*(NodeSize) + totalNameLength, sizeof(unsigned int)); //la nouvelle fin (check si c'est 0)
 		i++;
 	}
+
+	player = getHighestId(BotName);
 
 	unsigned int new_pos = startNodePos + i*(NodeSize) + totalNameLength + sizeof(unsigned int); //nouvelle pos aprés avoir lu les cellules
 
@@ -163,22 +179,10 @@ void show_path()
 	printf("\n-------------------------------------\n");
 }
 
-Vec2 Moyenne(Vec2 tab[], size_t len)
-{
-	Vec2 ret;
-	for(int i = 0; i < len; i++)
-	{
-		ret.x += tab[i].x;
-		ret.y += tab[i].y;
-	}
-	ret.x /= len;
-	ret.y /= len;
-	return ret;
-}
-
 Vec2 process_path()
 {
 	Vec2 sorted_path[20] = {0};
+	Vec2 direction = RDV;
 
 	unsigned int sorted_counter = 0;
 
@@ -191,13 +195,51 @@ Vec2 process_path()
 		}
 	}
 
+	if(sorted_counter == 0)
+		return direction;
+
 	sorted_counter--;
 
-	Vec2 direction;
+	
 	direction.x =sorted_path[sorted_counter-1].x - sorted_path[0].x;
 	direction.y = sorted_path[sorted_counter-1].y - sorted_path[0].y;
 
 	return direction;
+}
+
+Vec2 getRDVPoint()
+{
+	Vec2 rdv1; rdv1.x = RDV.x - 50; rdv1.y = RDV.y - 50;
+	Vec2 rdv2; rdv2.x = RDV.x + 50; rdv2.y = RDV.y - 50;
+	Vec2 rdv3; rdv3.x = RDV.x - 50; rdv3.y = RDV.y + 50;
+	Vec2 rdv4; rdv4.x = RDV.x + 50; rdv4.y = RDV.y + 50;
+
+	Vec2 rdvs[4] = {rdv1, rdv2, rdv3, rdv4};
+
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		if(tmp->node == player)
+		{
+			tmp = tmp->next;
+			continue;
+		}
+
+		for(int i = 0; i < 4; i++)
+		{
+			if(tmp->node != NULL && equalsVec2(rdvs[i], GetNodePos(tmp->node)))
+			{
+				if(strcmp(tmp->node->name, "blue") == 0)
+					continue;
+				else if(strcmp(tmp->node->name, "purple") == 0)
+					return rdvs[i];
+			}
+		}		
+
+		tmp = tmp->next;
+	}
+
+	return rdvs[0];
 }
 
 Vec2 rotate(Vec2 vec, double angle)
@@ -221,6 +263,18 @@ void show_debug_target(Vec2 target)
 	drawDebugRect(World2Screen(start), World2Screen(end), 255, 0, 0);
 }
 
+Vec2 fixTarget(Vec2* target)
+{
+	if(target->x < 10)
+		target->x = 10;
+	else if(target->x > WORLD_X - 10)
+		target->x = WORLD_X - 10;
+	if(target->y < 10)
+		target->y = 10;
+	else if(target->y > WORLD_Y - 10)
+		target->y = WORLD_Y - 10;
+}
+
 void bring_back(struct lws* wsi, Node* brebie)
 {
 	Vec2 U,V;
@@ -229,11 +283,18 @@ void bring_back(struct lws* wsi, Node* brebie)
 	unit.x = brebie->x + unit.x * (RAYON_BERGER + OFFSET + 40);
 	unit.y = brebie->y + unit.y * (RAYON_BERGER + OFFSET + 40);
 	Vec2 target = Vec2ftoVec2(unit);
+	fixTarget(&target);
 	Vec2 coord = World2Screen(target);
 	drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
 
 	Vec2 brebie_screen = World2Screen(GetNodePos(brebie));
 	drawDebugCircle(brebie_screen.x, brebie_screen.y, RAYON_BERGER + OFFSET, 0, 0, 0);
+
+	if(isNearWall(brebie, 10, 10))
+	{
+		Move(wsi, GetNodePos(brebie));
+		return;
+	}
 
 	if(!equalsVec2(target, GetNodePos(player)))
 	{
@@ -278,22 +339,28 @@ void Berger(struct lws* wsi)
 	static Vec2 direction;
 	Node* brebie = NULL;
 	Vec2 base;
-		base.x = BASE_X;
-		base.y = BASE_Y;
+	base.x = BASE_X;
+	base.y = BASE_Y;
 
 	switch(purple_status)
 	{
 	case GOTO:
 		direction.x = 0; direction.y = 0;
 
-		Move(wsi, RDV);
-
-		drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
-
-		if(equalsVec2(GetNodePos(player), RDV))
+		if(distance(GetNodePos(player), RDV) < 150)
 		{
-			purple_status = LISTEN;
-			printf("[Bot-Purple] Arrived at RDV !\n");
+			if(distance(getRDVPoint(), GetNodePos(player)) == 0)
+				purple_status = LISTEN;
+			else
+			{
+				Move(wsi, getRDVPoint());
+				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(getRDVPoint()), 255, 0, 0);
+			}
+		}
+		else
+		{
+			Move(wsi, RDV);
+			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
 		}
 
 		if((brebie = brebie_in_fov()) != NULL && distance(GetNodePos(brebie), base)> 900){
@@ -343,6 +410,8 @@ void Berger(struct lws* wsi)
 				new_pos.y = player->y + direction.y;
 				Move(wsi, new_pos);
 				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 0, 255);
+				if(isNearWall(player, 250, 150))
+					purple_status = GOTO;
 			}
 		}	
 		break;
@@ -354,6 +423,7 @@ void Berger(struct lws* wsi)
 			unit.x = brebie->x + unit.x * (RAYON_BERGER - 21);
 			unit.y = brebie->y + unit.y * (RAYON_BERGER - 21);
 			Vec2 target = Vec2ftoVec2(unit);
+			fixTarget(&target);
 			Vec2 coord = World2Screen(target);
 			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
 			if(distance(GetNodePos(player), target) > 50){

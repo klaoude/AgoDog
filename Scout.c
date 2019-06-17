@@ -5,7 +5,7 @@ Node* brebie_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && !NodeStack_find(saved_brebie, tmp->node->nodeID)) //&& notInBuff(saw_id, 10, tmp->node->nodeID))
+		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && !NodeStack_find(saved_brebie, tmp->node->nodeID))
 			return tmp->node;
 		tmp = tmp->next;
 	}
@@ -17,7 +17,7 @@ Node* berger_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)// && NodeNotInBuff(berger_id, 3, tmp->node))
+		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)
 			return tmp->node;
 		tmp = tmp->next;
 	}
@@ -76,6 +76,30 @@ void updateBergerStack()
 	}
 }
 
+Node* getNearestBerger(Node* node)
+{
+	NodeStack* tmpp = NULL;
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		debugNode(tmp->node);
+		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)
+		{
+			Node* cpy = malloc(sizeof(Node));
+			memcpy(cpy, tmp->node, sizeof(Node));
+			NodeStack_update(&tmpp, cpy);
+			printf("Saving %p\n", cpy);
+		}
+		tmp = tmp->next;
+	}
+	printNodeStack(nodes);
+	printNodeStack(tmpp);
+	Node near = *NodeStack_getNearest(tmpp, node);
+	debugNode(&near);
+	NodeStack_clear(tmpp);
+	return &near;
+}
+
 void Scout(struct lws* wsi)
 {
 	if(player == NULL || initMap == 0)
@@ -110,7 +134,27 @@ void Scout(struct lws* wsi)
 		}		
 		break;
 	case GOTORDV:
-		if((berger = berger_in_fov()) != NULL)
+		printf("gotordv\n");
+		if(distance(RDV, GetNodePos(player)) < 450)
+		{
+			Vec2 rdv = getRDVPoint();
+			printf("[Bot-Blue] Near rdv point, goto (%d, %d)\n", rdv.x, rdv.y);
+			if(equalsVec2(rdv, GetNodePos(player)))
+			{
+				printf("[Bot-Blue] Arrived at RDV. Waiting for berger...\n");
+				if((berger = berger_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)))
+				{
+					iaStatus = COMMUNICATING;
+					blue_ticks_start = ticks;
+					berger->time = 1000;
+					NodeStack_update(&saved_berger, berger);
+					printf("[Bot-Blue] Same pos, communication...\n");
+				}
+			}
+			else
+				Move(wsi, rdv);
+		}
+		/*if((berger = berger_in_fov()) != NULL)
 		{
 			if(!NodeStack_find(saved_berger, berger->nodeID) && equalsVec2(GetNodePos(berger), GetNodePos(player)))
 			{
@@ -120,7 +164,7 @@ void Scout(struct lws* wsi)
 				NodeStack_update(&saved_berger, berger);
 				printf("Same pos, communication...\n");
 			}
-		}
+		}*/
 		else
 			Move(wsi, RDV);
 		break;
