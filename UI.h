@@ -8,8 +8,8 @@
 #include "Utils.h"
 #include "IA.h"
 
-#define WINDOW_WIDTH 600
-#define WINDOW_HEIGTH 450
+#define WINDOW_WIDTH 800*2
+#define WINDOW_HEIGTH 600*2
 
 typedef struct Color
 {

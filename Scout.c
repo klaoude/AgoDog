@@ -72,10 +72,11 @@ Vec2 WorldtoMap(Vec2 pos)
 
 void updateBrebieStack()
 {
+	Vec2 base; base.x = BASE_X; base.y = BASE_Y;
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0)
+		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && distance(GetNodePos(tmp->node), base) > 900)
 		{
 			Node* cpy = malloc(sizeof(Node));
 			memcpy(cpy, tmp->node, sizeof(Node));
@@ -174,10 +175,11 @@ void Scout(struct lws* wsi)
 		if(distance(RDV, GetNodePos(player)) < 450)
 		{
 			Vec2 rdv = getRDVPointBlue();
-			if(equalsVec2(rdv, GetNodePos(player)))
+			if(!equalsVec2(rdv, RDV) && equalsVec2(rdv, GetNodePos(player)))
 			{
-				if((berger = berger_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)))
+				if((berger = isNodeHere(GetNodePos(player))) != NULL)
 				{
+					debugNode(berger);
 					iaStatus = COMMUNICATING;
 					blue_ticks_start = ticks;
 					berger->time = 1000;
@@ -188,25 +190,13 @@ void Scout(struct lws* wsi)
 			else
 				Move(wsi, rdv);
 		}
-		/*if((berger = berger_in_fov()) != NULL)
-		{
-			if(!NodeStack_find(saved_berger, berger->nodeID) && equalsVec2(GetNodePos(berger), GetNodePos(player)))
-			{
-				iaStatus = COMMUNICATING;
-                blue_ticks_start = ticks;
-				berger->time = 1000;
-				NodeStack_update(&saved_berger, berger);
-				printf("Same pos, communication...\n");
-			}
-		}*/
 		else
 			Move(wsi, RDV);
 		break;
 	case COMMUNICATING:
-		//printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
-		printNodeStack(saved_brebie);
+		//printNodeStack(saved_brebie);
 		brebie = NodeStack_getNearest(saved_brebie, player);
-		debugNode(brebie);
+		//debugNode(brebie);
 		if(ticks - blue_ticks_start >= 2 && brebie != NULL)
 		{
 			if(ticks - blue_ticks_start >= 15)

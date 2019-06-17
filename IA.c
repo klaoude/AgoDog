@@ -2,7 +2,9 @@
 
 double calcAngle(Vec2 u, Vec2 v)
 {
-	return acos((u.x * v.x + u.y * v.y) / (sqrt(u.x* u.x + u.y * u.y) * sqrt(v.x*v.x + v.y*v.y)));
+	double angl = acos((u.x * v.x + u.y * v.y) / (sqrt(u.x* u.x + u.y * u.y) * sqrt(v.x*v.x + v.y*v.y)));
+	double sign = u.x * v.y - u.y * v.x;
+	return sign > 0 ? angl : -angl;
 }
 
 unsigned char isNearWall(Node* node, unsigned int x, unsigned int y)
@@ -44,6 +46,18 @@ void InitIA()
 	purple_status = GOTO;
 	memset(&purple_communication_array, 0, sizeof(Vec2) * 20);
 	purple_communication_target_id = 0;
+}
+
+Node* isNodeHere(Vec2 pos)
+{
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && player != tmp->node && equalsVec2(pos, GetNodePos(tmp->node)))
+			return tmp->node;
+		tmp = tmp->next;
+	}
+	return NULL;
 }
 
 Node* getHighestId(char* name)
@@ -206,74 +220,67 @@ Vec2 process_path()
 
 Vec2 getRDVPointBlue()
 {
-	Vec2 rdv1; rdv1.x = RDV.x - 50; rdv1.y = RDV.y - 50;
-	Vec2 rdv2; rdv2.x = RDV.x + 50; rdv2.y = RDV.y - 50;
-	Vec2 rdv3; rdv3.x = RDV.x - 50; rdv3.y = RDV.y + 50;
-	Vec2 rdv4; rdv4.x = RDV.x + 50; rdv4.y = RDV.y + 50;
+	Vec2 rdv1; rdv1.x = RDV.x - 100; rdv1.y = RDV.y - 100;
+	Vec2 rdv2; rdv2.x = RDV.x + 100; rdv2.y = RDV.y - 100;
+	Vec2 rdv3; rdv3.x = RDV.x - 100; rdv3.y = RDV.y + 100;
+	Vec2 rdv4; rdv4.x = RDV.x + 100; rdv4.y = RDV.y + 100;
 
 	Vec2 rdvs[4] = {rdv1, rdv2, rdv3, rdv4};
 
-	NodeStack* tmp = nodes;
-	while(tmp != NULL)
+	for(int i = 0; i < 4; i++)
 	{
-		if(tmp->node == player)
-		{
-			tmp = tmp->next;
-			continue;
-		}
+		Node* node = isNodeHere(rdvs[i]);
 
-		for(int i = 0; i < 4; i++)
-		{
-			if(tmp->node != NULL && equalsVec2(rdvs[i], GetNodePos(tmp->node)))
-			{
-				if(strcmp(tmp->node->name, "blue") == 0)
-					continue;
-				else
-					return rdvs[i];
-			}
-		}		
+		if(node == player)
+			return rdvs[i];
 
-		tmp = tmp->next;
-	}
+		if(node != NULL && strcmp(node->name, "purple") == 0)
+			return rdvs[i];
+	}	
 
-	return rdvs[0];
+	for(int i = 0; i < 4; i++)
+	{
+		Node* node = isNodeHere(rdvs[i]);
+
+		if(node == NULL)
+			return rdvs[i];
+	}	
+
+	return RDV;
 }
 
 Vec2 getRDVPointPurple()
 {
-	Vec2 rdv1; rdv1.x = RDV.x - 50; rdv1.y = RDV.y - 50;
-	Vec2 rdv2; rdv2.x = RDV.x + 50; rdv2.y = RDV.y - 50;
-	Vec2 rdv3; rdv3.x = RDV.x - 50; rdv3.y = RDV.y + 50;
-	Vec2 rdv4; rdv4.x = RDV.x + 50; rdv4.y = RDV.y + 50;
+	Vec2 rdv1; rdv1.x = RDV.x - 100; rdv1.y = RDV.y - 100;
+	Vec2 rdv2; rdv2.x = RDV.x + 100; rdv2.y = RDV.y - 100;
+	Vec2 rdv3; rdv3.x = RDV.x - 100; rdv3.y = RDV.y + 100;
+	Vec2 rdv4; rdv4.x = RDV.x + 100; rdv4.y = RDV.y + 100;
 
 	Vec2 rdvs[4] = {rdv1, rdv2, rdv3, rdv4};
 
 	unsigned char id = 0;
 
-	NodeStack* tmp = nodes;
-	while(tmp != NULL)
+	for(int i = 0; i < 4; i++)
 	{
-		if(tmp->node == player)
-		{
-			tmp = tmp->next;
-			continue;
-		}
+		Node* node = isNodeHere(rdvs[i]);
 
-		for(int i = 0; i < 4; i++)
-		{
-			if(tmp->node != NULL && equalsVec2(rdvs[i], GetNodePos(tmp->node)))
-			{
-				if(strcmp(tmp->node->name, "blue") == 0)
-					continue;
-				else if(strcmp(tmp->node->name, "purple") == 0)
-					continue;
-			}
-		}		
+		if(node == player)
+			return rdvs[i];
 
-		tmp = tmp->next;
+		if(node != NULL && strcmp(node->name, "blue") == 0)
+			return rdvs[i];
 	}
 
-	return rdvs[0];
+	for(int i = 0; i < 4; i++)
+	{
+		Node* node = isNodeHere(rdvs[i]);
+
+		if(node == NULL)
+			return rdvs[i];
+	}		
+
+	return RDV;
+
 }
 
 Vec2 rotate(Vec2 vec, double angle)
@@ -383,12 +390,13 @@ void Berger(struct lws* wsi)
 
 		if(distance(GetNodePos(player), RDV) < 150)
 		{
-			if(distance(getRDVPointBlue(), GetNodePos(player)) == 0)
+			Vec2 rdv = getRDVPointPurple();
+			if(distance(rdv, GetNodePos(player)) == 0 && !equalsVec2(RDV, rdv))
 				purple_status = LISTEN;
 			else
 			{
-				Move(wsi, getRDVPointBlue());
-				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(getRDVPointBlue()), 255, 0, 0);
+				Move(wsi, rdv);
+				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(rdv), 255, 0, 0);
 			}
 		}
 		else
@@ -417,7 +425,7 @@ void Berger(struct lws* wsi)
 		target = NodeStack_get(nodes, purple_communication_target_id);
 		if(ticks - purple_ticks >= 20)
 		{
-			//show_path();
+			show_path();
 
 			direction = process_path();
 
