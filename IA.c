@@ -7,12 +7,12 @@ double calcAngle(Vec2 u, Vec2 v)
 
 void InitMap(int x, int y)
 {
-	map = (unsigned char**)malloc(y / 100 * sizeof(unsigned char *));
-	for(int i = 0; i < y / 100; i++)
-		*(map + i) = (unsigned char*)malloc(x / 100 * sizeof(unsigned char));
+	map = (unsigned char**)malloc(y / DIV_SCOUT * sizeof(unsigned char *));
+	for(int i = 0; i < y / DIV_SCOUT; i++)
+		*(map + i) = (unsigned char*)malloc(x / DIV_SCOUT * sizeof(unsigned char));
 
-	for(int i = 0; i < y / 100; i++)
-		for(int j = 0; j < x / 100; j++)
+	for(int i = 0; i < y / DIV_SCOUT; i++)
+		for(int j = 0; j < x / DIV_SCOUT; j++)
 			map[i][j] = 0;
 
 	initMap = 1;

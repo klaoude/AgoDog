@@ -3,6 +3,8 @@
 
 #include "IA.h"
 
+#define DIV_SCOUT 1000
+
 typedef enum SCOUT_STATUS
 {  
     EXPLORE,

@@ -24,28 +24,49 @@ Node* berger_in_fov()
 	return NULL;
 }
 
-Vec2 GetNextUnseenRegion()
+Vec2 GetNextUnseenRegion(Vec2 pos)
 {
 	Vec2 ret;
-	for(int y = WORLD_Y / 100 - 1; y > 0; y--)
+
+	for(int y = WORLD_Y / DIV_SCOUT - 1; y > 0; y--)
 	{
-		for(int x = WORLD_X / 100 - 1; x > 0; x--)
+		for(int x = WORLD_X / DIV_SCOUT - 1; x > 0; x--)
 		{
 			if(map[y][x] == 0)
 			{
-				ret.x = x * 100;
-				ret.y = y * 100;
-				return ret;	
+				ret.x = x * DIV_SCOUT;
+				ret.y = y * DIV_SCOUT;
+				if(equalsVec2(pos, ret)){
+						map[y][x] = 1;
+				}
+				return ret;
 			}
 		}
+		y-=2;
+
+		for(int x = 1; x < WORLD_X / DIV_SCOUT ; x++)
+		{
+			if(map[y][x] == 0)
+			{
+				ret.x = x * DIV_SCOUT;
+				ret.y = y * DIV_SCOUT;
+				if(equalsVec2(pos, ret)){
+						map[y][x] = 1;
+				}
+				return ret;
+			}
+			
+		}
+		y--;
+
 	}
 }
 
 Vec2 WorldtoMap(Vec2 pos)
 {
 	Vec2 ret;
-	ret.x = pos.x / 100;
-	ret.y = pos.y / 100;
+	ret.x = pos.x / DIV_SCOUT;
+	ret.y = pos.y / DIV_SCOUT;
 	return ret;
 }
 
@@ -98,15 +119,17 @@ void Scout(struct lws* wsi)
 		else
 		{
 			Vec2 pos = GetNodePos(player);
-			Vec2 coord = WorldtoMap(pos);
 
-			if(map[coord.y][coord.x] == 0)
-			{
-				map[coord.y][coord.x] = 1;
-			}
-
-			Vec2 next = GetNextUnseenRegion();
+			Vec2 next = GetNextUnseenRegion(pos);
 			Move(wsi, next);
+			for(int y = 0; y<6 ; y++){
+					printf("[");
+					for(int x = 0; x<9; x++){
+						printf("[%d]", map[y][x]);
+					}
+					printf("]\n");
+				}
+				printf("\n");
 		}		
 		break;
 	case GOTORDV:
