@@ -173,7 +173,7 @@ void Scout(struct lws* wsi)
 	case GOTORDV:
 		if(distance(RDV, GetNodePos(player)) < 450)
 		{
-			Vec2 rdv = getRDVPoint();
+			Vec2 rdv = getRDVPointBlue();
 			if(equalsVec2(rdv, GetNodePos(player)))
 			{
 				if((berger = berger_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)))

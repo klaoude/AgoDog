@@ -195,10 +195,7 @@ Vec2 process_path()
 		}
 	}
 
-	if(sorted_counter == 0)
-		return direction;
-
-	sorted_counter--;
+	//sorted_counter--;
 
 	
 	direction.x =sorted_path[sorted_counter-1].x - sorted_path[0].x;
@@ -207,7 +204,7 @@ Vec2 process_path()
 	return direction;
 }
 
-Vec2 getRDVPoint()
+Vec2 getRDVPointBlue()
 {
 	Vec2 rdv1; rdv1.x = RDV.x - 50; rdv1.y = RDV.y - 50;
 	Vec2 rdv2; rdv2.x = RDV.x + 50; rdv2.y = RDV.y - 50;
@@ -231,8 +228,45 @@ Vec2 getRDVPoint()
 			{
 				if(strcmp(tmp->node->name, "blue") == 0)
 					continue;
-				else if(strcmp(tmp->node->name, "purple") == 0)
+				else
 					return rdvs[i];
+			}
+		}		
+
+		tmp = tmp->next;
+	}
+
+	return rdvs[0];
+}
+
+Vec2 getRDVPointPurple()
+{
+	Vec2 rdv1; rdv1.x = RDV.x - 50; rdv1.y = RDV.y - 50;
+	Vec2 rdv2; rdv2.x = RDV.x + 50; rdv2.y = RDV.y - 50;
+	Vec2 rdv3; rdv3.x = RDV.x - 50; rdv3.y = RDV.y + 50;
+	Vec2 rdv4; rdv4.x = RDV.x + 50; rdv4.y = RDV.y + 50;
+
+	Vec2 rdvs[4] = {rdv1, rdv2, rdv3, rdv4};
+
+	unsigned char id = 0;
+
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		if(tmp->node == player)
+		{
+			tmp = tmp->next;
+			continue;
+		}
+
+		for(int i = 0; i < 4; i++)
+		{
+			if(tmp->node != NULL && equalsVec2(rdvs[i], GetNodePos(tmp->node)))
+			{
+				if(strcmp(tmp->node->name, "blue") == 0)
+					continue;
+				else if(strcmp(tmp->node->name, "purple") == 0)
+					continue;
 			}
 		}		
 
@@ -349,12 +383,12 @@ void Berger(struct lws* wsi)
 
 		if(distance(GetNodePos(player), RDV) < 150)
 		{
-			if(distance(getRDVPoint(), GetNodePos(player)) == 0)
+			if(distance(getRDVPointBlue(), GetNodePos(player)) == 0)
 				purple_status = LISTEN;
 			else
 			{
-				Move(wsi, getRDVPoint());
-				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(getRDVPoint()), 255, 0, 0);
+				Move(wsi, getRDVPointBlue());
+				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(getRDVPointBlue()), 255, 0, 0);
 			}
 		}
 		else
