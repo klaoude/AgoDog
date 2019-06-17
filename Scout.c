@@ -2,6 +2,13 @@
 
 Node* brebie_in_fov()
 {
+	if(purple_follow_id != 0)
+	{
+		Node* ret = NodeStack_get(nodes, purple_follow_id);
+		//printf("[Bot-Purple] Brebie save %d %p\n", purple_follow_id, ret);
+		return ret;
+	}
+
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{

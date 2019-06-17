@@ -1,0 +1,4 @@
+Problems :
+- Chacun ne s'occupe que de sa brebis
+- Si une brebis est déjà prise un chien ne doit pas essayer de la ramener
+-

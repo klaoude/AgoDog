@@ -51,5 +51,6 @@ PURPLE_STATE purple_status;
 unsigned int purple_ticks;
 Vec2 purple_communication_array[20];
 unsigned int purple_communication_target_id;
+unsigned int purple_follow_id;
 
 #endif
