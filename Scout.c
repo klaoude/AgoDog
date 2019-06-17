@@ -186,7 +186,7 @@ void Scout(struct lws* wsi)
 			{
 				if((berger = isNodeHere(GetNodePos(player))) != NULL)
 				{
-					debugNode(berger);
+					//debugNode(berger);
 					iaStatus = COMMUNICATING;
 					blue_ticks_start = ticks;
 					berger->time = 1000;

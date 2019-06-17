@@ -8,13 +8,16 @@ all : $(EXEC)
 
 test : $(TEST)
 
-$(EXEC) : main.o UI.o IA.o WS.o Utils.o Scout.o
+$(EXEC) : main.o UI.o IA.o WS.o Utils.o Scout.o Berger.o
 	$(CC) -o $(EXEC) *.o $(LDFLAGS)
 
 $(TEST) : unitTest.o Utils.o
 	$(CC) -o $(TEST) unitTest.o Utils.o $(LDFLAGS)
 
 unitTest.o : unitTest.c
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+Berger.o : Berger.c
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 main.o : main.c

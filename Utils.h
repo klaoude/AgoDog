@@ -54,11 +54,16 @@ typedef struct NodeStack
 	struct NodeStack* next;
 } NodeStack;
 
+Vec2f unitarise(Vec2 vec);
 Vec2 GetNodePos(Node* node);
 unsigned char Vec2_isZero(Vec2 vec);
 unsigned char equalsVec2(Vec2 a, Vec2 b);
 double norme(Vec2 vec);
 double distance(Vec2 a, Vec2 b);
+double calcAngle(Vec2 u, Vec2 v);
+unsigned char isNearWall(Node* node, unsigned int x, unsigned int y);
+Vec2 rotate(Vec2 vec, double angle);
+unsigned char inRange(Vec2 target, Node* berger);
 
 void NodeStack_push(NodeStack** list, Node* elem);
 void NodeStack_clear(NodeStack* list);
@@ -68,6 +73,8 @@ NodeStack* NodeStack_remove(NodeStack* list, unsigned int id);
 char NodeStack_find(NodeStack* list, unsigned int id);
 size_t NodeStack_length(NodeStack* list);
 void NodeStack_update(NodeStack** list, Node* elem);
+Node* isNodeHere(Vec2 pos);
+Node* getHighestId(char* name);
 
 Vec2f Vec2toVec2f(Vec2 vec);
 Vec2 Vec2ftoVec2(Vec2f vec);

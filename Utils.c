@@ -1,4 +1,64 @@
 #include "Utils.h"
+#include "IA.h"
+
+Vec2 rotate(Vec2 vec, double angle)
+{
+	Vec2 ret;
+	ret.x = vec.x * cos(angle) - vec.y * sin(angle);
+	ret.y = (vec.y) * sin(angle) + vec.x * sin(angle);
+	return ret;
+}
+
+unsigned char inRange(Vec2 target, Node* berger)
+{
+	return (berger->x - target.x < CARRE && berger->x - target.x > -CARRE && berger->y - target.y < CARRE && berger->y - target.y > -CARRE);
+}
+
+Node* isNodeHere(Vec2 pos)
+{
+	NodeStack* tmp = nodes;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && player != tmp->node && equalsVec2(pos, GetNodePos(tmp->node)))
+			return tmp->node;
+		tmp = tmp->next;
+	}
+	return NULL;
+}
+
+Vec2f unitarise(Vec2 vec)
+{
+	Vec2f ret;
+	ret.x = vec.x / norme(vec);
+	ret.y = vec.y / norme(vec);
+	return ret;
+}
+
+Node* getHighestId(char* name)
+{
+	NodeStack* tmp = nodes;
+	unsigned short maxID = 0;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && strcmp(name, tmp->node->name) == 0)
+			maxID = tmp->node->nodeID;
+		tmp = tmp->next;
+	}
+
+	return NodeStack_get(nodes, maxID);
+}
+
+double calcAngle(Vec2 u, Vec2 v)
+{
+	double angl = acos((u.x * v.x + u.y * v.y) / (sqrt(u.x* u.x + u.y * u.y) * sqrt(v.x*v.x + v.y*v.y)));
+	double sign = u.x * v.y - u.y * v.x;
+	return sign > 0 ? angl : -angl;
+}
+
+unsigned char isNearWall(Node* node, unsigned int x, unsigned int y)
+{
+	return node->x < x || WORLD_X - node->x < x || node->y < y || WORLD_Y - node->y < y;
+}
 
 unsigned char NodeNotInBuff(void* buff, size_t len, Node* elem)
 {
