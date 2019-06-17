@@ -10,20 +10,10 @@ typedef enum SCOUT_STATUS
     COMMUNICATING
 } SCOUT_STATUS;
 
-typedef struct Timed_Node
-{
-    Node* node;
-    unsigned int time;
-} Timed_Node;
-
 Node* brebie_in_fov();
 
 NodeStack* saved_brebie;
-unsigned int saw_id[10];
-unsigned char saw_i;
-
-Timed_Node berger_id[3];
-unsigned char berger_i;
+NodeStack* saved_berger;
 
 void Scout(struct lws* wsi);
 

@@ -17,6 +17,7 @@ void InitMap(int x, int y)
 
 	initMap = 1;
 	saved_brebie = NULL;
+	saved_berger = NULL;
 
 	WORLD_X = x;
 	WORLD_Y = y;
@@ -30,10 +31,6 @@ void InitMap(int x, int y)
 void InitIA()
 {
 	nodes = NULL;
-
-	initMap = 0;
-	memset(saw_id, 0, 10 * sizeof(unsigned int));
-	saw_i = 0;
 
 	ticks = 0;
 
@@ -62,6 +59,7 @@ void UpdateNodes(unsigned char* data)
 	{
 		unsigned char* pos = data + startNodePos + i * 18 + totalNameLength;
 		Node* node = malloc(sizeof(Node));
+		node->time = 0;
 
 		memcpy(node, pos, 18);
 
@@ -318,7 +316,7 @@ void Berger(struct lws* wsi)
 		target = NodeStack_get(nodes, purple_communication_target_id);
 		if(ticks - purple_ticks >= 20)
 		{
-			show_path();
+			//show_path();
 
 			direction = process_path();
 

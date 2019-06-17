@@ -49,19 +49,6 @@ Vec2 WorldtoMap(Vec2 pos)
 	return ret;
 }
 
-void updateLifeTime()
-{
-    for(unsigned char i = 0; i < 3; i++)
-    {
-        berger_id[i].time--;
-        if(berger_id[i].time == 0)
-        {
-            berger_i--;
-            memset(berger_id+i*sizeof(Timed_Node), 0, sizeof(Timed_Node));
-        }
-    }
-}
-
 void updateBrebieStack()
 {
 	NodeStack* tmp = nodes;
@@ -78,6 +65,17 @@ void updateBrebieStack()
 	}
 }
 
+void updateBergerStack()
+{
+	NodeStack* tmp = saved_berger;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL)
+			tmp->node->time--;
+		tmp = tmp->next;
+	}
+}
+
 void Scout(struct lws* wsi)
 {
 	if(player == NULL || initMap == 0)
@@ -87,8 +85,7 @@ void Scout(struct lws* wsi)
 	Node* berger = NULL;
 
 	updateBrebieStack();
-
-    updateLifeTime();
+	updateBergerStack();
 
 	switch(iaStatus)
 	{
@@ -115,11 +112,12 @@ void Scout(struct lws* wsi)
 	case GOTORDV:
 		if((berger = berger_in_fov()) != NULL)
 		{
-			Move(wsi, GetNodePos(berger));
-			if(equalsVec2(GetNodePos(berger), GetNodePos(player)))
+			if(!NodeStack_find(saved_berger, berger->nodeID) && equalsVec2(GetNodePos(berger), GetNodePos(player)))
 			{
 				iaStatus = COMMUNICATING;
                 blue_ticks_start = ticks;
+				berger->time = 1000;
+				NodeStack_update(&saved_berger, berger);
 				printf("Same pos, communication...\n");
 			}
 		}
@@ -128,9 +126,9 @@ void Scout(struct lws* wsi)
 		break;
 	case COMMUNICATING:
 		//printf("[BOT-Blue] Communicating state, deltatime=%d\n", ticks - blue_ticks_start);
-		printNodeStack(saved_brebie);
+		//printNodeStack(saved_brebie);
 		brebie = NodeStack_getNearest(saved_brebie, player);
-		debugNode(brebie);
+		//debugNode(brebie);
 		if(ticks - blue_ticks_start >= 2 && brebie != NULL)
 		{
 			if(ticks - blue_ticks_start >= 15)

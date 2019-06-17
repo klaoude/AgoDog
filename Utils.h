@@ -45,7 +45,7 @@ typedef struct Node
 	unsigned char R,G,B;
 	NODE_TYPE type;
 	unsigned char* name;
-	unsigned char isSafe;
+	unsigned int time;
 } Node;
 
 typedef struct NodeStack
