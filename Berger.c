@@ -186,7 +186,8 @@ void Berger(struct lws* wsi)
 			else
 			{
 				Move(wsi, rdv);
-				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(rdv), 255, 0, 0);
+				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(rdv), 255, 0, 255);
+                if(equalsVec2(GetNodeplayer))
 			}
 		}
 		else
@@ -234,7 +235,7 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL)
 			{
-				if((berger = berger_in_fov()) != NULL && distance(GetNodePos(berger), GetNodePos(brebie)) < distance(GetNodePos(player), GetNodePos(brebie)) )
+				if((berger = berger_in_fov()) != NULL && distance(GetNodePos(berger), GetNodePos(brebie)) < 210)
 				{
 					purple_status = GOTO;
 				}
@@ -247,7 +248,7 @@ void Berger(struct lws* wsi)
 				new_pos.y = player->y + direction.y;
 				Move(wsi, new_pos);
 				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 0, 255);
-				if(isNearWall(player, 250, 150))
+				if(isNearWall(player, 20, 20))
 					purple_status = GOTO;
 			}
 		}	

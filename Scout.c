@@ -5,7 +5,6 @@ Node* brebie_in_fov()
 	if(purple_follow_id != 0)
 	{
 		Node* ret = NodeStack_get(nodes, purple_follow_id);
-		//printf("[Bot-Purple] Brebie save %d %p\n", purple_follow_id, ret);
 		return ret;
 	}
 
@@ -24,7 +23,7 @@ Node* berger_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)
+		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0 && tmp->node != player)
 			return tmp->node;
 		tmp = tmp->next;
 	}
