@@ -42,9 +42,9 @@ Vec2 GetNextUnseenRegion(Vec2 pos)
 			{
 				ret.x = x * DIV_SCOUT;
 				ret.y = y * DIV_SCOUT;
-				if(equalsVec2(pos, ret)){
+				if(equalsVec2(pos, ret))
 						map[y][x] = 1;
-				}
+
 				return ret;
 			}
 		}
@@ -64,7 +64,6 @@ Vec2 GetNextUnseenRegion(Vec2 pos)
 			
 		}
 		y--;
-
 	}
 }
 
@@ -175,6 +174,7 @@ void Scout(struct lws* wsi)
 
 			Vec2 next = GetNextUnseenRegion(pos);
 			Move(wsi, next);
+			printf("[Bot-Blue] go next \n");
 		}		
 		break;
 	case GOTORDV:

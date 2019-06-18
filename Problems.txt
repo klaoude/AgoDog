@@ -1,8 +1,10 @@
 Problems :
-- Chacun ne s'occupe que de sa brebis
-- Si une brebis est déjà prise un chien ne doit pas essayer de la ramener
-- Le bleu enregistre plusieurs fois la même brebis à des positions différentes pendant qu'elle se fait ramenée 
+DONE - Chacun ne s'occupe que de sa brebis
+DONE - Si une brebis est déjà prise un chien ne doit pas essayer de la ramener
+MAYBE - Le bleu enregistre plusieurs fois la même brebis à des positions différentes pendant qu'elle se fait ramenée 
 - Le bleu n'explore pas correctement la map après avoir envoyé des bergers vers des brebis 
 -problem avec saved_brebie : mettre les ID des brebis vues par le bleu dans une liste --> il ne pourra la sauvegarder qu'une seule fois. On lui fait oublier tous les ID seulement quand il a exploré toute la map
 -Si on a plusieurs bleu il faut que les 2 n'aient pas le même trajet de découverte de la map
-
+- Ne pas continuer a foncer dans le mur
+- Point du rdv du purple faux
+- Quand la brebie est proche d'un mur, elle fonce dedans

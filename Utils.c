@@ -55,9 +55,16 @@ double calcAngle(Vec2 u, Vec2 v)
 	return sign > 0 ? angl : -angl;
 }
 
+unsigned char isOutOfMap(Vec2 vec)
+{
+
+}
+
 unsigned char isNearWall(Node* node, unsigned int x, unsigned int y)
 {
-	return node->x < x || WORLD_X - node->x < x || node->y < y || WORLD_Y - node->y < y;
+	if(node == NULL) return 0;
+
+	return (node->x <= x || node->x >= (WORLD_X - x) || node->y <= y || node->y >= (WORLD_Y - y));
 }
 
 unsigned char NodeNotInBuff(void* buff, size_t len, Node* elem)

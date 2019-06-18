@@ -125,6 +125,51 @@ Vec2 World2Screen(Vec2 pos)
 	return ret;
 }
 
+void drawWalls()
+{
+	if(player == NULL)
+		return;
+
+	Vec2 topLeft, topRight, bottomLeft, bottomRight;
+	topLeft.x = 0; topLeft.y = 0;
+	topRight.x = WORLD_X; topRight.y = 0;
+	bottomLeft.x = 0; bottomLeft.y = WORLD_Y;
+	bottomRight.x = WORLD_X; bottomRight.y = WORLD_Y;
+
+	Vec2 topLeftWall, topRightWall, bottomLeftWall, bottomRightWall;
+
+	topLeftWall.x = topLeft.x;
+	topLeftWall.y = topLeft.y;
+	topRightWall.x = topRight.x;
+	topRightWall.y = topRight.y;
+	bottomLeftWall.x = bottomLeft.x;
+	bottomLeftWall.y = bottomLeft.y;
+	bottomRightWall.x = bottomRight.x;
+	bottomRightWall.y = bottomRight.y;
+
+	Vec2 playerPos = GetNodePos(player);
+
+	topLeft = World2Screen(topLeft);
+	topRight = World2Screen(topRight);
+	bottomLeft = World2Screen(bottomLeft);
+	bottomRight = World2Screen(bottomRight);
+
+	topLeftWall = World2Screen(topLeftWall);
+	topRightWall = World2Screen(topRightWall);
+	bottomLeftWall = World2Screen(bottomLeftWall);
+	bottomRightWall = World2Screen(bottomRightWall);
+
+	drawDebugLine(topLeft, topRight, 0, 0, 0);
+	drawDebugLine(topRight, bottomRight, 0, 0, 0);
+	drawDebugLine(bottomRight, bottomLeft, 0, 0, 0);
+	drawDebugLine(bottomLeft, topLeft, 0, 0, 0);
+
+	drawDebugLine(topLeftWall, topRightWall, 0, 255, 255);
+	drawDebugLine(topRightWall, bottomRightWall, 0, 255, 255);
+	drawDebugLine(bottomRightWall, bottomLeftWall, 0, 255, 255);
+	drawDebugLine(bottomLeftWall, topLeftWall, 0, 255, 255);
+}
+
 void DrawNode(Node* node)
 {
 	Circle nodeCircle = Node2Circle(node);
@@ -136,32 +181,6 @@ void DrawNode(Node* node)
 	nodeCircle.y = nodePos.y;
 
 	DrawCircle(&nodeCircle);
-
-	/*if(node->type == PLAYER)
-	{
-		char* toWrite = malloc(strlen(node->name) + 1 + 6);
-		sprintf(toWrite, "%s [%d]", node->name, node->size);
-		SDL_Color color;
-		color.r = 255 - node->R;
-		color.g = 255 - node->G;
-		color.b = 255 - node->B;
-		color.a = 255;
-		SDL_Surface* textSurface = TTF_RenderUTF8_Blended(pFont, toWrite, color);
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(pRenderer, textSurface);
-
-		Vec2 zoom = getZoom();
-		unsigned short nodeSize = node->size;
-		SDL_Rect rekt;
-		rekt.x = nodePos.x - nodeSize / 2;
-		rekt.y = nodePos.y;
-		rekt.w = nodeSize * WINDOW_WIDTH / zoom.x;
-		rekt.h = nodeSize * WINDOW_HEIGTH / zoom.y;
-
-		SDL_RenderCopy(pRenderer, texture, NULL, &rekt);
-
-		SDL_FreeSurface(textSurface);
-		SDL_DestroyTexture(texture);
-	}*/
 }
 
 void DrawAllNodes()
@@ -178,7 +197,7 @@ void DrawAllNodes()
 
 void Draw()
 {
-	//drawWalls();
+	drawWalls();
 
 	Node enclos;
 	enclos.nodeID = 0;
