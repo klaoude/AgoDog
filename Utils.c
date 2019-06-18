@@ -99,6 +99,7 @@ void NodeStack_push(NodeStack** list, Node* elem)
 {
 	NodeStack* new = malloc(sizeof(NodeStack));
 	new->node = elem;
+	new->PurpleSent = 0;
 	new->next = *list;
 	*list = new;
 }
@@ -189,7 +190,7 @@ Node* NodeStack_getNearest(NodeStack* list, Node* node)
 		}
 
 		double dist = distance(GetNodePos(curr), GetNodePos(node));
-		if(dist < bestDist)
+		if(dist < bestDist && tmp->PurpleSent == 0)
 		{
 			bestDist = dist;
 			ret = curr;
@@ -223,6 +224,46 @@ size_t NodeStack_length(NodeStack* list)
 		tmp = tmp->next;
 	}
 
+	return ret;
+}
+
+void NodeStack_UpdatePurpleSent(NodeStack* list, unsigned int id)
+{
+	NodeStack* tmp = list;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && tmp->node->nodeID == id)
+		{
+			tmp->PurpleSent = 1;
+		}
+		tmp = tmp->next;
+	}
+}
+
+char NodeStack_RetPurpleSent(NodeStack* list, unsigned int id)
+{
+	NodeStack* tmp = list;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && tmp->node->nodeID == id)
+		{
+			return tmp->PurpleSent;
+		}
+		tmp = tmp->next;
+	}
+	return 0;
+}
+
+char NodeStack_NumberOfPurpleToBeSent(NodeStack* list)
+{
+	NodeStack* tmp = list;
+	char ret = 0;
+	while(tmp != NULL)
+	{
+		if(tmp->PurpleSent == 0)
+			ret ++;
+		tmp = tmp->next;
+	}
 	return ret;
 }
 

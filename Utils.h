@@ -51,6 +51,7 @@ typedef struct Node
 typedef struct NodeStack
 {
 	Node* node;
+	char PurpleSent;
 	struct NodeStack* next;
 } NodeStack;
 
@@ -73,6 +74,9 @@ NodeStack* NodeStack_remove(NodeStack* list, unsigned int id);
 char NodeStack_find(NodeStack* list, unsigned int id);
 size_t NodeStack_length(NodeStack* list);
 void NodeStack_update(NodeStack** list, Node* elem);
+void NodeStack_UpdatePurpleSent(NodeStack* list, unsigned int id);
+char NodeStack_RetPurpleSent(NodeStack* list, unsigned int id);
+char NodeStack_NumberOfPurpleToBeSent(NodeStack* list);
 Node* isNodeHere(Vec2 pos);
 Node* getHighestId(char* name);
 

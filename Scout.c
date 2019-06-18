@@ -24,7 +24,7 @@ Node* berger_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)
+		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0 && tmp->node != player)
 			return tmp->node;
 		tmp = tmp->next;
 	}
@@ -164,7 +164,7 @@ void Scout(struct lws* wsi)
 	switch(iaStatus)
 	{
 	case EXPLORE:
-		if(saved_brebie != NULL)
+		if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
 		{
 			iaStatus = GOTORDV;
 			printf("[BOT-Blue] Brebie found !!\n");
@@ -209,7 +209,8 @@ void Scout(struct lws* wsi)
 			if(ticks - blue_ticks_start >= 15)
 			{
                 printf("[Bot-Blue] Sended direction (%d, %d)\n", brebie->x, brebie->y);
-				saved_brebie = NodeStack_remove(saved_brebie, brebie->nodeID);
+				//saved_brebie = NodeStack_remove(saved_brebie, brebie->nodeID);
+				NodeStack_UpdatePurpleSent(saved_brebie, brebie->nodeID);
                 iaStatus = EXPLORE;
 			}
 			else
