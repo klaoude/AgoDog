@@ -12,7 +12,7 @@ Node* scout_in_fov()
 	}
 	return NULL;
 }
-
+ 
 Vec2f GetTarget(Node* brebie)
 {
 	Vec2 brebie_pos = GetNodePos(brebie);
@@ -170,6 +170,8 @@ void Berger(struct lws* wsi)
 	Node* brebie = NULL;
 	Node* berger = NULL;
 	Vec2 base;
+	Vec2f point_targetf;
+	Vec2 point_target;
 	base.x = BASE_X;
 	base.y = BASE_Y;
 
@@ -198,8 +200,19 @@ void Berger(struct lws* wsi)
 
 		if((brebie = brebie_in_fov()) != NULL && distance(GetNodePos(brebie), base)> 900)
 		{
-			direction = GetNodePos(brebie);
-			purple_status = BRING_BACK;
+			//berger = berger_in_fov();
+			/*if(berger == NULL)
+			{
+				direction = GetNodePos(brebie);
+				purple_status = BRING_BACK;
+			}
+			if(berger != NULL && distance(GetNodePos(berger), GetNodePos(brebie)) > distance(GetNodePos(player), GetNodePos(brebie)))
+			{*/
+				direction = GetNodePos(brebie);
+				purple_status = BRING_BACK;
+			//}
+
+
 		}
 		break;
 
@@ -235,11 +248,19 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL)
 			{
-				if((berger = berger_in_fov()) != NULL && distance(GetNodePos(berger), GetNodePos(brebie)) < 210)
+				point_targetf = GetTarget(brebie);
+				point_targetf.x = brebie->x + point_targetf.x * (RAYON_BERGER + OFFSET + 40);
+				point_targetf.y = brebie->y + point_targetf.y * (RAYON_BERGER + OFFSET + 40);
+				point_target = Vec2ftoVec2(point_targetf);
+				berger = berger_in_fov();					
+				if(berger == NULL)
 				{
-					purple_status = GOTO;
+					bring_back(wsi, brebie); 
 				}
-				else bring_back(wsi, brebie);
+				else if((berger != NULL) && distance(GetNodePos(berger), point_target) > distance(GetNodePos(player), point_target))
+					{
+						bring_back(wsi, brebie); 
+					}
 			}
 			else
 			{

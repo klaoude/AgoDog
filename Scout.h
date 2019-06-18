@@ -12,6 +12,14 @@ typedef enum SCOUT_STATUS
     COMMUNICATING
 } SCOUT_STATUS;
 
+/*typedef struct BlueNodeStack
+{
+	Node* node;
+	char SentPurple;
+	struct BlueNodeStack* next;
+
+} BlueNodeStack;*/
+
 Node* brebie_in_fov();
 
 NodeStack* saved_brebie;
