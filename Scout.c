@@ -49,9 +49,10 @@ Vec2 GetNextUnseenRegion(Vec2 pos)
 			}
 		}
 		y-=2;
-
+		
+		if(y < 0) y = 0;
 		for(int x = 1; x < WORLD_X / DIV_SCOUT ; x++)
-		{
+		{			
 			if(map[y][x] == 0)
 			{
 				ret.x = x * DIV_SCOUT;
@@ -115,18 +116,14 @@ Node* getNearestBerger(Node* node)
 	return &near;
 }
 
-void checkScoutedMap()
+unsigned char checkScoutedMap()
 {
 	for(int y=1; y <= WORLD_Y / DIV_SCOUT -1; y+=2)
 		for(int x=1; x <= WORLD_X / DIV_SCOUT -1; x++)
 			if(map[y][x] == 0)
-				return;
+				return 0;
 
-	for(int y=0; y <= WORLD_Y / DIV_SCOUT -1; y++)
-		for(int x=0; x <= WORLD_X / DIV_SCOUT -1; x++)
-			map[y][x] = 0;
-
-	NodeStack_InitPurpleSent(saved_brebie);
+	return 1;
 }
 
 void Scout(struct lws* wsi)
@@ -142,6 +139,9 @@ void Scout(struct lws* wsi)
 	switch(iaStatus)
 	{
 	case EXPLORE:
+		if(checkScoutedMap()) iaStatus = GOTORDV;
+		Move(wsi, GetNextUnseenRegion(GetNodePos(player)));
+		/*
 		if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
 		{
 			iaStatus = GOTORDV;
@@ -154,7 +154,8 @@ void Scout(struct lws* wsi)
 
 			Vec2 next = GetNextUnseenRegion(pos);
 			Move(wsi, next);
-		}		
+		}
+		*/
 		break;
 	case GOTORDV:
 		if(distance(RDV, GetNodePos(player)) < 450)
