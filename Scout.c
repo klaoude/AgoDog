@@ -146,6 +146,7 @@ void checkScoutedMap()
 			map[y][x] = 0;
 		}
 	}
+	NodeStack_InitPurpleSent(saved_brebie);
 }
 
 void Scout(struct lws* wsi)
