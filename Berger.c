@@ -207,6 +207,12 @@ void Berger(struct lws* wsi)
 
 	Vec2 base; base.x = BASE_X; base.y = BASE_Y;
 
+	if((brebie = brebie_in_fov()) == NULL)
+	{
+		berger_follow_id = 0;
+		brebie = NULL;
+	}
+
 	switch(berger_status)
 	{
 	case GOTO:
@@ -223,13 +229,8 @@ void Berger(struct lws* wsi)
 		{
 			Vec2 rdv = getRDVPointPurple();
 
-			if((scout = scout_in_fov()) != NULL && equalsVec2(GetNodePos(player), GetNodePos(scout)))
-			{
-				berger_status = LISTEN;
-				berger_communication_target_id = scout->nodeID;
-				berger_ticks = ticks;
-				return;
-			}
+			if(equalsVec2(GetNodePos(player), rdv))
+				berger_status = WAITING;
 
 			Move(wsi, rdv);
 			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(rdv), 255, 0, 255);
@@ -239,10 +240,21 @@ void Berger(struct lws* wsi)
 		Move(wsi, RDV);
 		drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
 		break;
+
+	case WAITING:
+		if((scout = scout_in_fov()) != NULL && equalsVec2(GetNodePos(player), GetNodePos(scout)))
+		{
+			berger_status = LISTEN;
+			berger_communication_target_id = scout->nodeID;
+			berger_ticks = ticks;
+			printf("[Bot-Berger] Same pos as scout %d, start communication...\n", berger_communication_target_id);
+		}
+		break;
 	
 	case LISTEN:
 		{
 			Node* target = NodeStack_get(nodes, berger_communication_target_id);
+			printf("[Bot-Berger] LISTEN : target_id = %d\n", berger_communication_target_id);
 			if(ticks - berger_ticks > TICKS_LISTEN)
 			{
 				show_path();

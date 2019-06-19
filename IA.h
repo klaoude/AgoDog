@@ -20,8 +20,6 @@ NodeStack* nodes;
 
 void IARecv(unsigned char* data);
 void InitIA();
-Vec2 getRDVPointBlue();
-Vec2 getRDVPointPurple();
 Node* isNodeHere(Vec2 pos);
 
 void Move(struct lws *wsi, Vec2 pos);

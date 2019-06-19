@@ -126,6 +126,41 @@ unsigned char checkScoutedMap()
 	return 1;
 }
 
+Vec2 getRDVPointBlue()
+{
+	Vec2 rdv1; rdv1.x = RDV.x - 100; rdv1.y = RDV.y - 100;
+	Vec2 rdv2; rdv2.x = RDV.x + 100; rdv2.y = RDV.y - 100;
+	Vec2 rdv3; rdv3.x = RDV.x - 100; rdv3.y = RDV.y + 100;
+	Vec2 rdv4; rdv4.x = RDV.x + 100; rdv4.y = RDV.y + 100;
+
+	Vec2 rdvs[4] = {rdv1, rdv2, rdv3, rdv4};
+
+	for(int i = 0; i < 4; i++)
+	{
+		Node* node = isNodeHere(rdvs[i]);
+
+		if(node == player)
+			return rdvs[i];
+
+		if(node != NULL && strcmp(node->name, berger_name) == 0)
+			return rdvs[i];
+	}	
+
+	Node* tmp;
+	if((tmp = isNodeHere(RDV)) != NULL && strcmp(tmp->name, berger_name) == 0)
+		return RDV;
+
+	for(int i = 0; i < 4; i++)
+	{
+		Node* node = isNodeHere(rdvs[i]);
+
+		if(node == NULL)
+			return rdvs[i];
+	}	
+
+	return RDV;
+}
+
 void Scout(struct lws* wsi)
 {
 	if(player == NULL || initMap == 0)
@@ -141,6 +176,7 @@ void Scout(struct lws* wsi)
 	case EXPLORE:
 		if(checkScoutedMap()) iaStatus = GOTORDV;
 		Move(wsi, GetNextUnseenRegion(GetNodePos(player)));
+		
 		/*
 		if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
 		{
@@ -154,14 +190,14 @@ void Scout(struct lws* wsi)
 
 			Vec2 next = GetNextUnseenRegion(pos);
 			Move(wsi, next);
-		}
-		*/
+		}*/
+		
 		break;
 	case GOTORDV:
 		if(distance(RDV, GetNodePos(player)) < 450)
 		{
 			Vec2 rdv = getRDVPointBlue();
-			if(!equalsVec2(rdv, RDV) && equalsVec2(rdv, GetNodePos(player)) && (berger = isNodeHere(GetNodePos(player))) != NULL)
+			if(equalsVec2(rdv, GetNodePos(player)) && (berger = isNodeHere(GetNodePos(player))) != NULL)
 			{
 				//debugNode(berger);
 				iaStatus = COMMUNICATING;

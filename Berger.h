@@ -12,9 +12,7 @@ typedef enum BERGER_STATE
     LISTEN,
     LOOKING,
     BRING_BACK,
-    GETTING_INFO,
-    RAMENEZ
-    
+    WAITING    
 } BERGER_STATE;
 
 void InitBerger();
