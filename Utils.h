@@ -77,6 +77,7 @@ void NodeStack_update(NodeStack** list, Node* elem);
 void NodeStack_UpdatePurpleSent(NodeStack* list, unsigned int id);
 char NodeStack_RetPurpleSent(NodeStack* list, unsigned int id);
 char NodeStack_NumberOfPurpleToBeSent(NodeStack* list);
+void NodeStack_InitPurleSent(NodeStack* list);
 Node* isNodeHere(Vec2 pos);
 Node* getHighestId(char* name);
 

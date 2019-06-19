@@ -42,7 +42,7 @@ Vec2 GetNextUnseenRegion(Vec2 pos)
 			{
 				ret.x = x * DIV_SCOUT;
 				ret.y = y * DIV_SCOUT;
-				if(equalsVec2(pos, ret))
+				if(distance(pos,ret) < 100)
 						map[y][x] = 1;
 
 				return ret;
@@ -146,6 +146,7 @@ void checkScoutedMap()
 			map[y][x] = 0;
 		}
 	}
+	NodeStack_InitPurpleSent(saved_brebie);
 }
 
 void Scout(struct lws* wsi)
