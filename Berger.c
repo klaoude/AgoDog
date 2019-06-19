@@ -178,7 +178,7 @@ unsigned char isBrebieFree(Node* brebie)
 	Vec2 base; base.x = BASE_X; base.y = BASE_Y;
 	Node* berger = berger_in_fov();
 	if(berger != NULL)
-		return (distance(GetNodePos(player), GetNodePos(brebie)) < distance(GetNodePos(brebie), GetNodePos(berger)) && distance(GetNodePos(brebie), base) < 900);
+		return (player->nodeID < berger->nodeID && distance(GetNodePos(brebie), base) < 900);
 	else
 		return 1;
 }
@@ -252,13 +252,10 @@ void Berger(struct lws* wsi)
 	case LOOKING:
 		if(!Vec2_isZero(direction))
 		{
-			if((brebie = brebie_in_fov()) != NULL)
+			if((brebie = brebie_in_fov()) != NULL && isBrebieFree(brebie))
 			{
-				if(isBrebieFree(brebie))
-				{
-					bring_back(wsi, brebie);
-					return;
-				}
+				bring_back(wsi, brebie);
+				return;
 			}
 			else if(isNearWall(player, 50, 50))
 				berger_status = GOTO;
