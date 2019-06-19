@@ -12,7 +12,6 @@ void InitMap(int x, int y)
 
 	initMap = 1;
 	saved_brebie = NULL;
-	saved_berger = NULL;
 
 	WORLD_X = x;
 	WORLD_Y = y;

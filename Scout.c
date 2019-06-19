@@ -42,8 +42,8 @@ Vec2 GetNextUnseenRegion(Vec2 pos)
 			{
 				ret.x = x * DIV_SCOUT;
 				ret.y = y * DIV_SCOUT;
-				if(distance(pos,ret) < 100)
-						map[y][x] = 1;
+				if(distance(pos,ret) < 10)
+					map[y][x] = 1;
 
 				return ret;
 			}
@@ -56,12 +56,11 @@ Vec2 GetNextUnseenRegion(Vec2 pos)
 			{
 				ret.x = x * DIV_SCOUT;
 				ret.y = y * DIV_SCOUT;
-				if(equalsVec2(pos, ret)){
-						map[y][x] = 1;
-				}
+				if(distance(pos,ret) < 10)
+					map[y][x] = 1;
+
 				return ret;
-			}
-			
+			}			
 		}
 		y--;
 	}
@@ -88,17 +87,6 @@ void updateBrebieStack()
 			NodeStack_update(&saved_brebie, cpy);	
 		}
 
-		tmp = tmp->next;
-	}
-}
-
-void updateBergerStack()
-{
-	NodeStack* tmp = saved_berger;
-	while(tmp != NULL)
-	{
-		if(tmp->node != NULL)
-			tmp->node->time--;
 		tmp = tmp->next;
 	}
 }
@@ -130,22 +118,14 @@ Node* getNearestBerger(Node* node)
 void checkScoutedMap()
 {
 	for(int y=1; y <= WORLD_Y / DIV_SCOUT -1; y+=2)
-	{
 		for(int x=1; x <= WORLD_X / DIV_SCOUT -1; x++)
-		{
 			if(map[y][x] == 0)
-			{
 				return;
-			}
-		}
-	}
+
 	for(int y=0; y <= WORLD_Y / DIV_SCOUT -1; y++)
-	{
 		for(int x=0; x <= WORLD_X / DIV_SCOUT -1; x++)
-		{
 			map[y][x] = 0;
-		}
-	}
+
 	NodeStack_InitPurpleSent(saved_brebie);
 }
 
@@ -158,7 +138,6 @@ void Scout(struct lws* wsi)
 	Node* berger = NULL;
 
 	updateBrebieStack();
-	updateBergerStack();
 
 	switch(iaStatus)
 	{
@@ -181,17 +160,12 @@ void Scout(struct lws* wsi)
 		if(distance(RDV, GetNodePos(player)) < 450)
 		{
 			Vec2 rdv = getRDVPointBlue();
-			if(!equalsVec2(rdv, RDV) && equalsVec2(rdv, GetNodePos(player)))
+			if(!equalsVec2(rdv, RDV) && equalsVec2(rdv, GetNodePos(player)) && (berger = isNodeHere(GetNodePos(player))) != NULL)
 			{
-				if((berger = isNodeHere(GetNodePos(player))) != NULL)
-				{
-					//debugNode(berger);
-					iaStatus = COMMUNICATING;
-					blue_ticks_start = ticks;
-					berger->time = 1000;
-					NodeStack_update(&saved_berger, berger);
-					printf("[Bot-Blue] Same pos, communication...\n");
-				}
+				//debugNode(berger);
+				iaStatus = COMMUNICATING;
+				blue_ticks_start = ticks;
+				printf("[Bot-Blue] Same pos, communication...\n");
 			}
 			else
 				Move(wsi, rdv);

@@ -64,12 +64,12 @@ Vec2 process_path()
 
 	//sorted_counter--;
 
-	if(sorted_counter == 0)
+	if(sorted_counter < 2)
 		return direction;
 
 	
-	direction.x = sorted_path[sorted_counter-1].x - sorted_path[0].x;
-	direction.y = sorted_path[sorted_counter-1].y - sorted_path[0].y;
+	direction.x = sorted_path[sorted_counter-2].x - sorted_path[0].x;
+	direction.y = sorted_path[sorted_counter-2].y - sorted_path[0].y;
 
 	printf("return of process : (%d, %d)\n", direction.x, direction.y);
 
@@ -111,20 +111,18 @@ Vec2 getRDVPointPurple()
 
 Vec2 fixTarget(Vec2* target)
 {
-	if(target->x < 25)
-		target->x = 25;
-	else if(target->x > WORLD_X - 25)
-		target->x = WORLD_X - 25;
-	if(target->y < 25)
-		target->y = 25;
-	else if(target->y > WORLD_Y - 25)
-		target->y = WORLD_Y - 25;
+	if(target->x < 34)
+		target->x = 34;
+	else if(target->x > WORLD_X - 34)
+		target->x = WORLD_X - 34;
+	if(target->y < 34)
+		target->y = 34;
+	else if(target->y > WORLD_Y - 34)
+		target->y = WORLD_Y - 34;
 }
 
 void bring_back(struct lws* wsi, Node* brebie)
 {
-	berger_follow_id = brebie->nodeID;
-	printf("[Bot-Berger] Bring_back() berger_follow_id = %d\n", berger_follow_id);
 	Vec2 U,V;
 
 	Vec2f unit = GetTarget(brebie);
@@ -145,9 +143,9 @@ void bring_back(struct lws* wsi, Node* brebie)
 		return;	
 	}
 
-	if(!equalsVec2(target, GetNodePos(player)))
+	if(distance(target, GetNodePos(player)) < 20)
 	{
-		if(distance(GetNodePos(brebie), GetNodePos(player)) < RAYON_BERGER)
+		if(distance(GetNodePos(brebie), GetNodePos(player)) < RAYON_BERGER + 40)
 		{
 			Vec2 vec;
 			vec.x = brebie->x - player->x;
@@ -188,7 +186,7 @@ unsigned char isBrebieFree(Node* brebie)
 	Node* berger = NULL;
 	if((berger = berger_in_fov()) != NULL)
 	{
-		if(player->nodeID < berger->nodeID)
+		if(distance(GetNodePos(player), GetNodePos(brebie)) < distance(GetNodePos(brebie), GetNodePos(berger)))
 			return 1;
 
 		return 0;
@@ -266,6 +264,8 @@ void Berger(struct lws* wsi)
 		{
 			if((brebie = brebie_in_fov()) != NULL && isBrebieFree(brebie))
 			{
+				berger_follow_id = brebie->nodeID;
+				printf("[Bot-Berger] Bring_back() berger_follow_id = %d\n", berger_follow_id);
 				bring_back(wsi, brebie);
 				return;
 			}
@@ -285,7 +285,7 @@ void Berger(struct lws* wsi)
 		break;
 
 	case BRING_BACK:
-		if((brebie = brebie_in_fov()) != NULL)
+		if((brebie = brebie_in_fov()) != NULL && isBrebieFree(brebie))
 		{
 			Vec2f unit = GetTarget(brebie);
 			unit.x = brebie->x + unit.x * (10);

@@ -23,7 +23,6 @@ typedef enum SCOUT_STATUS
 Node* brebie_in_fov();
 
 NodeStack* saved_brebie;
-NodeStack* saved_berger;
 
 void Scout(struct lws* wsi);
 
