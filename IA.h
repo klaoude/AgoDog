@@ -6,7 +6,7 @@
 #include "Scout.h"
 
 #define OFFSET 10
-#define RAYON_BERGER 200
+#define RAYON_BERGER 100
 
 #define BASE_X 0
 #define BASE_Y 3000
