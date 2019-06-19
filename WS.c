@@ -122,7 +122,7 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 				//printHex(rbuf, offset);
 				IARecv(rbuf);
 
-				if(isUI == 1)
+				if(isUI)
 				{
 					Clear();
 
@@ -134,7 +134,7 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 				else if(strcmp(BotName, berger_name) == 0)
 					Berger(wsi);
 				
-				if(isUI == 1)
+				if(isUI)
 					Loop(&forceExit);
 
 				offset = 0;

@@ -4,9 +4,9 @@
 #include "Utils.h"
 #include "WS.h"
 #include "Scout.h"
+#include "Berger.h"
 
-#define OFFSET 10
-#define RAYON_BERGER 100
+#define OFFSET 40
 
 #define BASE_X 0
 #define BASE_Y 3000
@@ -37,22 +37,5 @@ Node* player;
 char* BotName;
 
 unsigned int ticks;
-
-typedef enum PURPLE_STATE
-{
-    LISTEN,
-    BRING_BACK,
-    GOTO,
-    GETTING_INFO,
-    RAMENEZ
-} PURPLE_STATE;
-
-PURPLE_STATE purple_status;
-unsigned int purple_ticks;
-Vec2 purple_communication_array[20];
-unsigned int purple_communication_target_id;
-unsigned int purple_follow_id;
-
-char* berger_name;
 
 #endif

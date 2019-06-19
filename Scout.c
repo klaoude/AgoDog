@@ -2,9 +2,9 @@
 
 Node* brebie_in_fov()
 {
-	if(purple_follow_id != 0)
+	if(berger_follow_id != 0)
 	{
-		Node* ret = NodeStack_get(nodes, purple_follow_id);
+		Node* ret = NodeStack_get(nodes, berger_follow_id);
 		return ret;
 	}
 
@@ -174,7 +174,6 @@ void Scout(struct lws* wsi)
 
 			Vec2 next = GetNextUnseenRegion(pos);
 			Move(wsi, next);
-			printf("[Bot-Blue] go next \n");
 		}		
 		break;
 	case GOTORDV:

@@ -27,17 +27,11 @@ void InitIA()
 {
 	nodes = NULL;
 
-	purple_follow_id = 0;
-
 	ticks = 0;
 
 	iaStatus = EXPLORE;
 
-	purple_status = GOTO;
-	memset(&purple_communication_array, 0, sizeof(Vec2) * 20);
-	purple_communication_target_id = 0;
-
-	berger_name = "yellow";
+	InitBerger();
 }
 
 void UpdateNodes(unsigned char* data)

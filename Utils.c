@@ -324,6 +324,8 @@ void printHex(char* data, size_t size)
 
 void debugNode(Node* node)
 {
+	if(node == NULL) return;
+	
     printf("[Debug] Node (id=%d) %p\n", node->nodeID, node);
     printf("\tpos: (%d, %d)\n", node->x, node->y);
     printf("\tsize: %d\n\tflag: %d\n\tRGB: (0x%x, 0x%x, 0x%x)\n\tname: %s\n", node->size, node->flags,
