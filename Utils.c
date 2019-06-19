@@ -274,6 +274,16 @@ char NodeStack_NumberOfPurpleToBeSent(NodeStack* list)
 	return ret;
 }
 
+void NodeStack_InitPurleSent(NodeStack* list)
+{
+	NodeStack* tmp = list;
+	while(tmp != NULL)
+	{
+		tmp->PurpleSent = 0;
+		tmp = tmp->next;
+	}
+}
+
 void NodeStack_update(NodeStack** list, Node* elem)
 {
 	NodeStack* tmp = *list;
