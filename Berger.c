@@ -213,6 +213,7 @@ void Berger(struct lws* wsi)
 	{
 	case GOTO:
 		direction.x = direction.y = 0;
+		berger_follow_id = 0;
 		if((brebie = brebie_in_fov()) != NULL && isBrebieFree(brebie) && !BrebieinBase(brebie))
 		{
 			direction = GetNodePos(brebie);
