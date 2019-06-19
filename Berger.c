@@ -241,11 +241,13 @@ void Berger(struct lws* wsi)
 			{
 				if((berger = berger_in_fov()) != NULL)
 				{
-					if(distance(GetNodePos(berger), GetNodePos(player)) < distance(GetNodePos(berger), GetNodePos(brebie)))
+					if(distance(GetNodePos(brebie), GetNodePos(player)) < distance(GetNodePos(berger), GetNodePos(brebie)))
 						bring_back(wsi, brebie);
 					else
 						purple_status = GOTO;
 				}
+				else
+					bring_back(wsi, brebie);
 			}
 			else
 			{

@@ -131,7 +131,7 @@ int callbackOgar(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
 
 				if(strcmp(BotName, "blue") == 0)
 					Scout(wsi);
-				else if(strcmp(BotName, "purple") == 0)
+				else if(strcmp(BotName, berger_name) == 0)
 					Berger(wsi);
 				
 				if(isUI == 1)

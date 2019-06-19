@@ -53,4 +53,6 @@ Vec2 purple_communication_array[20];
 unsigned int purple_communication_target_id;
 unsigned int purple_follow_id;
 
+char* berger_name;
+
 #endif

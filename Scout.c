@@ -23,7 +23,7 @@ Node* berger_in_fov()
 	NodeStack* tmp = nodes;
 	while(tmp != NULL)
 	{
-		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0 && tmp->node != player)
+		if(tmp->node != NULL && strcmp(tmp->node->name, berger_name) == 0 && tmp->node != player)
 			return tmp->node;
 		tmp = tmp->next;
 	}
@@ -110,7 +110,7 @@ Node* getNearestBerger(Node* node)
 	while(tmp != NULL)
 	{
 		debugNode(tmp->node);
-		if(tmp->node != NULL && strcmp(tmp->node->name, "purple") == 0)
+		if(tmp->node != NULL && strcmp(tmp->node->name, berger_name) == 0)
 		{
 			Node* cpy = malloc(sizeof(Node));
 			memcpy(cpy, tmp->node, sizeof(Node));

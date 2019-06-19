@@ -36,6 +36,8 @@ void InitIA()
 	purple_status = GOTO;
 	memset(&purple_communication_array, 0, sizeof(Vec2) * 20);
 	purple_communication_target_id = 0;
+
+	berger_name = "yellow";
 }
 
 void UpdateNodes(unsigned char* data)
@@ -131,7 +133,7 @@ Vec2 getRDVPointBlue()
 		if(node == player)
 			return rdvs[i];
 
-		if(node != NULL && strcmp(node->name, "purple") == 0)
+		if(node != NULL && strcmp(node->name, berger_name) == 0)
 			return rdvs[i];
 	}	
 
