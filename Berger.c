@@ -8,6 +8,9 @@ void InitBerger()
 	berger_communication_target_id = 0;
 
 	berger_name = "yellow";
+
+	berger_follow_id = 0;
+	saved_brebie = NULL;
 }
 
 Node* scout_in_fov()
@@ -121,6 +124,7 @@ Vec2 fixTarget(Vec2* target)
 void bring_back(struct lws* wsi, Node* brebie)
 {
 	berger_follow_id = brebie->nodeID;
+	printf("[Bot-Berger] Bring_back() berger_follow_id = %d\n", berger_follow_id);
 	Vec2 U,V;
 
 	Vec2f unit = GetTarget(brebie);
@@ -173,14 +177,23 @@ void bring_back(struct lws* wsi, Node* brebie)
 	}	
 }
 
-unsigned char isBrebieFree(Node* brebie)
+unsigned char BrebieinBase(Node* brebie)
 {
 	Vec2 base; base.x = BASE_X; base.y = BASE_Y;
-	Node* berger = berger_in_fov();
-	if(berger != NULL)
-		return (player->nodeID < berger->nodeID && distance(GetNodePos(brebie), base) < 900);
-	else
-		return 1;
+	return distance(GetNodePos(brebie), base) < 900;
+}
+
+unsigned char isBrebieFree(Node* brebie)
+{
+	Node* berger = NULL;
+	if((berger = berger_in_fov()) != NULL)
+	{
+		if(player->nodeID < berger->nodeID)
+			return 1;
+
+		return 0;
+	}
+	return 1;
 }
 
 void Berger(struct lws* wsi)
@@ -200,13 +213,11 @@ void Berger(struct lws* wsi)
 	{
 	case GOTO:
 		direction.x = direction.y = 0;
-		if((brebie = brebie_in_fov()) != NULL)
+		if((brebie = brebie_in_fov()) != NULL && isBrebieFree(brebie) && !BrebieinBase(brebie))
 		{
-			if(isBrebieFree(brebie))
-			{
-				direction = GetNodePos(brebie);
-				berger_status = LOOKING;
-			}
+			direction = GetNodePos(brebie);
+			berger_status = LOOKING;
+			return;
 		}
 
 		if(distance(GetNodePos(player), RDV) < 150)
@@ -289,6 +300,8 @@ void Berger(struct lws* wsi)
 		{
 			berger_status = GOTO;
 			berger_follow_id = 0;
+			printf("[Bot-Berger] nearBase berger_follow_id = %d\n", berger_follow_id);
+			direction.x = direction.y = 0;
 		}
 		break;
 	}

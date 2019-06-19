@@ -109,6 +109,8 @@ void Move(struct lws *wsi, Vec2 pos)
 	memcpy(packet+1, &pos, sizeof(pos));
 
 	sendCommand(wsi, packet, 13);
+
+	free(packet);
 }
 
 Vec2 getRDVPointBlue()

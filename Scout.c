@@ -205,7 +205,7 @@ void Scout(struct lws* wsi)
 		//debugNode(brebie);
 		if(ticks - blue_ticks_start >= 2 && brebie != NULL)
 		{
-			if(ticks - blue_ticks_start >= 15)
+			if(ticks - blue_ticks_start >= TICKS_LISTEN - 2)
 			{
                 printf("[Bot-Blue] Sended direction (%d, %d)\n", brebie->x, brebie->y);
 				//saved_brebie = NodeStack_remove(saved_brebie, brebie->nodeID);
