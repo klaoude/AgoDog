@@ -1,5 +1,11 @@
 #include "Scout.h"
 
+void InitScout()
+{
+	explored = 0;
+	iaStatus = EXPLORE;
+}
+
 Node* brebie_in_fov()
 {
 	if(berger_follow_id != 0)
@@ -174,24 +180,31 @@ void Scout(struct lws* wsi)
 	switch(iaStatus)
 	{
 	case EXPLORE:
-		if(checkScoutedMap()) iaStatus = GOTORDV;
-		Move(wsi, GetNextUnseenRegion(GetNodePos(player)));
-		
-		/*
-		if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
+		if(explored)
 		{
-			iaStatus = GOTORDV;
-			printf("[BOT-Blue] Brebie found !!\n");
+			if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
+			{
+				iaStatus = GOTORDV;
+				printf("[BOT-Blue] Brebie found !!\n");
+			}
+			else
+			{
+				checkScoutedMap();
+				Vec2 pos = GetNodePos(player);
+
+				Vec2 next = GetNextUnseenRegion(pos);
+				Move(wsi, next);
+			}
 		}
 		else
 		{
-			checkScoutedMap();
-			Vec2 pos = GetNodePos(player);
-
-			Vec2 next = GetNextUnseenRegion(pos);
-			Move(wsi, next);
-		}*/
-		
+			if(checkScoutedMap())
+			{
+				iaStatus = GOTORDV;
+				explored = 1;
+			}
+			Move(wsi, GetNextUnseenRegion(GetNodePos(player)));	
+		}		
 		break;
 	case GOTORDV:
 		if(distance(RDV, GetNodePos(player)) < 450)

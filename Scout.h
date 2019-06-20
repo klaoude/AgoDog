@@ -20,6 +20,8 @@ typedef enum SCOUT_STATUS
 
 } BlueNodeStack;*/
 
+void InitScout();
+
 Node* brebie_in_fov();
 
 NodeStack* saved_brebie;
@@ -30,6 +32,7 @@ SCOUT_STATUS iaStatus;
 unsigned int blue_ticks_start;
 
 unsigned char** map;
+unsigned char explored;
 
 Node* berger_in_fov();
 

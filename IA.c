@@ -28,9 +28,8 @@ void InitIA()
 
 	ticks = 0;
 
-	iaStatus = EXPLORE;
-
 	InitBerger();
+	InitScout();
 }
 
 void UpdateNodes(unsigned char* data)
