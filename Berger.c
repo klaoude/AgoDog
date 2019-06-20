@@ -68,6 +68,7 @@ Vec2 process_path()
 		return direction;
 
 	
+
 	direction.x = sorted_path[sorted_counter-2].x - sorted_path[0].x;
 	direction.y = sorted_path[sorted_counter-2].y - sorted_path[0].y;
 
@@ -171,6 +172,7 @@ void bring_back(struct lws* wsi, Node* brebie)
 	}
 	else
 	{
+		berger_ticks = 0;
 		berger_status = BRING_BACK; 
 	}	
 }
@@ -308,6 +310,13 @@ void Berger(struct lws* wsi)
 			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
 			Move(wsi, target);
 		}
+		else
+		{
+			berger_ticks++;
+			if(berger_ticks > 100)
+				berger_status = GOTO;
+		}
+		
 
 		if(distance(GetNodePos(player), base) < 900)
 		{
@@ -319,152 +328,3 @@ void Berger(struct lws* wsi)
 		break;
 	}
 }
-
-/*
-void Berger(struct lws* wsi)
-{
-	if(player == NULL)
-		return;
-
-	Node* scout = NULL;
-	Node* target = NULL;
-	static Vec2 direction;
-	Node* brebie = NULL;
-	Node* berger = NULL;
-	Vec2 base;
-	Vec2f point_targetf;
-	Vec2 point_target;
-	base.x = BASE_X;
-	base.y = BASE_Y;
-
-	static unsigned char toto = 0;
-
-	switch(berger_status)
-	{
-	case GOTO:
-		direction.x = 0; direction.y = 0;
-
-		if((brebie = brebie_in_fov()) != NULL && distance(GetNodePos(brebie), base)> 900)
-		{
-			if((berger = berger_in_fov()) != NULL && distance(GetNodePos(brebie), GetNodePos(player)) < distance(GetNodePos(berger), GetNodePos(brebie)))
-			{
-				direction = GetNodePos(brebie);
-				berger_status = BRING_BACK;
-			}
-			else if(berger == NULL)
-			{
-				direction = GetNodePos(brebie);
-				berger_status = BRING_BACK;
-			}
-		}
-
-		if(distance(GetNodePos(player), RDV) < 150)
-		{
-			Vec2 rdv = getRDVPointPurple();
-			if(distance(rdv, GetNodePos(player)) == 0 && !equalsVec2(RDV, rdv))
-				berger_status = LISTEN;
-			else
-			{
-				Move(wsi, rdv);
-				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(rdv), 255, 0, 255);
-			}
-		}
-		else
-		{
-			Move(wsi, RDV);
-			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
-		}
-		break;
-
-	case LISTEN:
-		if((scout = scout_in_fov()) != NULL && equalsVec2(GetNodePos(player), GetNodePos(scout)))
-		{
-			berger_status = GETTING_INFO;
-			printf("[Bot-berger] Samepos as a scout, Start listening !\n");
-			berger_ticks = ticks;
-			berger_communication_target_id = scout->nodeID;
-		}
-		break;
-
-	case GETTING_INFO:
-		target = NodeStack_get(nodes, berger_communication_target_id);
-		if(ticks - berger_ticks >= 20)
-		{
-			show_path();
-
-			direction = process_path();
-
-			berger_status = BRING_BACK;
-		}
-		else if(target != NULL)
-		{
-			berger_communication_array[ticks - berger_ticks] = GetNodePos(target);
-			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(GetNodePos(target)), 0, 255, 0);
-		}
-		break;
-
-	case BRING_BACK:
-		if(!Vec2_isZero(direction))
-		{
-			if((brebie = brebie_in_fov()) != NULL)
-			{
-				if((berger = berger_in_fov()) != NULL)
-				{
-					if(distance(GetNodePos(brebie), GetNodePos(player)) < distance(GetNodePos(berger), GetNodePos(brebie)))
-						bring_back(wsi, brebie);
-					else
-						berger_status = GOTO;
-				}
-				else
-					bring_back(wsi, brebie);
-			}
-			else
-			{
-				Vec2 new_pos;
-				new_pos.x = player->x + direction.x;
-				new_pos.y = player->y + direction.y;
-				Move(wsi, new_pos);
-				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 0, 255);
-				if(isNearWall(player, 50, 50))
-				{
-					printf("[Bot-Purple] Too close to the wall !\n");
-					berger_status = GOTO;
-				}
-			}
-		}	
-		break;
-	
-	case RAMENEZ:		
-		if((brebie = brebie_in_fov()) != NULL)
-		{
-			Vec2f unit = GetTarget(brebie);
-			unit.x = brebie->x + unit.x * (RAYON_BERGER - 10);
-			unit.y = brebie->y + unit.y * (RAYON_BERGER - 10);
-			Vec2 target = Vec2ftoVec2(unit);
-			fixTarget(&target);
-			Vec2 coord = World2Screen(target);
-			drawDebugCircle(coord.x, coord.y, 10, 255, 255, 0);
-
-			if(toto)
-			{
-				Move(wsi, target);
-				if(equalsVec2(target, GetNodePos(player)))
-					toto = 0;
-				return;
-			}		
-
-			if(distance(GetNodePos(player), target) > 50)
-			{
-				toto = 1;
-			}
-			else
-				Move(wsi, base);
-		}
-		if(distance(GetNodePos(player), base) < 900){
-			berger_status = GOTO;
-			berger_follow_id = 0;
-		}
-		break;
-	}
-}
-*/

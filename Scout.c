@@ -232,14 +232,12 @@ void Scout(struct lws* wsi)
 			if(ticks - blue_ticks_start >= TICKS_LISTEN - 2)
 			{
                 printf("[Bot-Blue] Sended direction (%d, %d)\n", brebie->x, brebie->y);
-				//saved_brebie = NodeStack_remove(saved_brebie, brebie->nodeID);
 				NodeStack_UpdatePurpleSent(saved_brebie, brebie->nodeID);
                 iaStatus = EXPLORE;
 			}
 			else
 			{
 				Move(wsi, GetNodePos(brebie));
-				//debugNode(saved_brebie->node);
 			}
 		}
 		break;
