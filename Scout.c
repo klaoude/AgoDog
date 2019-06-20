@@ -132,6 +132,31 @@ unsigned char checkScoutedMap()
 	return 1;
 }
 
+unsigned char checkScoutedHalfMap()
+{
+	int y = 3;
+	printf("salut cazou\n");
+
+	for(int x=8; x >= 5; x--)
+	{
+		printf("cazou [%d, %d]  ", x, y);
+		if(map[y][x] == 0)
+			return 0;
+	}
+
+	y = 5;
+	for(int x=8; x >= 1; x--)
+	{
+		//printf("cazou [%d, %d]  ", x, y);
+		if(map[y][x] == 0)
+			return 0;
+	}
+	
+	
+
+	return 1;
+}
+
 Vec2 getRDVPointBlue()
 {
 	Vec2 rdv1; rdv1.x = RDV.x - 100; rdv1.y = RDV.y - 100;
@@ -174,34 +199,47 @@ void Scout(struct lws* wsi)
 
 	Node* brebie = NULL;
 	Node* berger = NULL;
+	static unsigned char test =0;
 
 	updateBrebieStack();
 
 	switch(iaStatus)
 	{
 	case EXPLORE:
-		if(explored)
+		printf("cazou yano schwifty : %d \n", explored);
+		if(explored == 5)
 		{
 			if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
 			{
 				iaStatus = GOTORDV;
-				printf("[BOT-Blue] Brebie found !!\n");
+				//printf("[BOT-Blue] Brebie found !!\n");
 			}
 			else
 			{
-				checkScoutedMap();
+				//checkScoutedMap();
 				Vec2 pos = GetNodePos(player);
 
 				Vec2 next = GetNextUnseenRegion(pos);
 				Move(wsi, next);
 			}
 		}
+
 		else
 		{
+			//printf("cazou yano schwifty : %d \n", explored);
+			test = checkScoutedHalfMap();
+			printf("Half-map %d \n", test);
+
+			if(test && (explored < 4))
+			{
+				iaStatus = GOTORDV;
+				explored ++;
+			}
+
 			if(checkScoutedMap())
 			{
 				iaStatus = GOTORDV;
-				explored = 1;
+				explored = 5;
 			}
 			Move(wsi, GetNextUnseenRegion(GetNodePos(player)));	
 		}		
