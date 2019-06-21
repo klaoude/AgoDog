@@ -18,8 +18,6 @@ void InitMap(int x, int y)
 
 	RDV.x = WORLD_X / 2;
 	RDV.y = WORLD_Y / 2;
-
-	printf("[BOT] Map set to (%d, %d)\n", x, y);
 }
 
 
@@ -139,7 +137,6 @@ Node* getNearestBerger(Node* node)
 			Node* cpy = malloc(sizeof(Node));
 			memcpy(cpy, tmp->node, sizeof(Node));
 			NodeStack_update(&tmpp, cpy);
-			printf("Saving %p\n", cpy);
 		}
 		tmp = tmp->next;
 	}
@@ -259,7 +256,6 @@ void Scout(struct lws* wsi)
 				{
 					Vec2 pos = GetNodePos(player);
 					Vec2 next = GetNextUnseenRegion(pos);
-					//printf("next [%d, %d]\n", next.x, next.y);
 
 					if(checkScoutedMap()) 
 					{
@@ -296,7 +292,6 @@ void Scout(struct lws* wsi)
 			{
 				iaStatus = COMMUNICATING;
 				blue_ticks_start = ticks;
-				printf("[Bot-Blue] Same pos, communication...\n");
 			}
 			else
 				Move(wsi, rdv);
@@ -305,14 +300,11 @@ void Scout(struct lws* wsi)
 			Move(wsi, RDV);
 		break;
 	case COMMUNICATING:
-		//printNodeStack(saved_brebie);
 		brebie = NodeStack_getNearest(saved_brebie, player);
-		//debugNode(brebie);
 		if(ticks - blue_ticks_start >= 2 && brebie != NULL)
 		{
 			if(ticks - blue_ticks_start >= TICKS_LISTEN - 2)
 			{
-                printf("[Bot-Blue] Sended direction (%d, %d)\n", brebie->x, brebie->y);
 				NodeStack_UpdatePurpleSent(saved_brebie, brebie->nodeID);
                 iaStatus = EXPLORE;
 			}

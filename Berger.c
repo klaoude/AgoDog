@@ -43,14 +43,6 @@ Vec2f GetTarget(Node* brebie)
 	return unitarise(vect);
 }
 
-void show_path()
-{
-	printf("[Bot-Purple] Trajet viewer !\n");
-	for(int i = 0; i < TICKS_LISTEN; i++)
-		printf("(%d, %d) -> ", berger_communication_array[i].x, berger_communication_array[i].y);
-	printf("\n-------------------------------------\n");
-}
-
 Vec2 process_path()
 {
 	Vec2 sorted_path[TICKS_LISTEN] = {0};
@@ -69,8 +61,6 @@ Vec2 process_path()
 
 	direction.x = sorted_path[sorted_counter-2].x - sorted_path[0].x;
 	direction.y = sorted_path[sorted_counter-2].y - sorted_path[0].y;
-
-	printf("return of process : (%d, %d)\n", direction.x, direction.y);
 
 	return direction;
 }
@@ -266,7 +256,6 @@ void Berger(struct lws* wsi)
 			berger_status = LISTEN;
 			berger_communication_target_id = scout->nodeID;
 			berger_ticks = ticks;
-			printf("[Bot-Berger] Same pos as scout %d, start communication...\n", berger_communication_target_id);
 		}
 
 		if((berger = berger_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)) && berger->nodeID < player->nodeID)
@@ -277,11 +266,8 @@ void Berger(struct lws* wsi)
 	case LISTEN:
 		{
 			Node* target = NodeStack_get(nodes, berger_communication_target_id);
-			printf("[Bot-Berger] LISTEN : target_id = %d\n", berger_communication_target_id);
 			if(ticks - berger_ticks > TICKS_LISTEN)
 			{
-				show_path();
-
 				direction = process_path();
 
 				if(!equalsVec2(direction, RDV))
@@ -303,7 +289,6 @@ void Berger(struct lws* wsi)
 			if((brebie = brebie_in_fov()) != NULL && isBrebieFree(brebie))
 			{
 				berger_follow_id = brebie->nodeID;
-				printf("[Bot-Berger] Bring_back() berger_follow_id = %d\n", berger_follow_id);
 				bring_back(wsi, brebie);
 				return;
 			}
@@ -318,8 +303,6 @@ void Berger(struct lws* wsi)
 				drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(new_pos), 0, 0, 255);
 			}
 		}
-		else
-			printf("[Bot-Berger] Erreur Looking without direction !\n");
 		break;
 
 	case BRING_BACK:
@@ -346,7 +329,6 @@ void Berger(struct lws* wsi)
 		{
 			berger_status = GOTO;
 			berger_follow_id = 0;
-			printf("[Bot-Berger] nearBase berger_follow_id = %d\n", berger_follow_id);
 			direction.x = direction.y = 0;
 		}
 		break;
