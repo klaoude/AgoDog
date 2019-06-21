@@ -1,9 +1,32 @@
 #include "Scout.h"
 
+void InitMap(int x, int y)
+{
+	map = (unsigned char**)malloc(y / DIV_SCOUT * sizeof(unsigned char *));
+	for(int i = 0; i < y / DIV_SCOUT; i++)
+		*(map + i) = (unsigned char*)malloc(x / DIV_SCOUT * sizeof(unsigned char));
+
+	for(int i = 0; i < y / DIV_SCOUT; i++)
+		for(int j = 0; j < x / DIV_SCOUT; j++)
+			map[i][j] = 0;
+
+	initMap = 1;
+	saved_brebie = NULL;
+
+	WORLD_X = x;
+	WORLD_Y = y;
+
+	RDV.x = WORLD_X / 2;
+	RDV.y = WORLD_Y / 2;
+
+	printf("[BOT] Map set to (%d, %d)\n", x, y);
+}
+
+
 void InitScout()
 {
 	explored = 0;
-	iaStatus = EXPLORE;
+	iaStatus = EXPLORE;	
 }
 
 Node* brebie_in_fov()
@@ -160,8 +183,8 @@ unsigned char checkScoutedHalfMap()
 
 void InitTabMap()
 {
-	for(int y=0; y< WORLD_Y/DIV_SCOUT -1; y++)
-		for(int x=0; x<WORLD_X/DIV_SCOUT -1; x++)
+	for(int y=0; y< WORLD_Y/DIV_SCOUT; y++)
+		for(int x=0; x<WORLD_X/DIV_SCOUT; x++)
 			map[y][x] = 0;
 }
 
