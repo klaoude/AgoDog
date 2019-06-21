@@ -221,7 +221,8 @@ void Scout(struct lws* wsi)
 				if(explored == 5)
 				{
 					InitTabMap();
-					NodeStack_InitPurpleSent(saved_brebie);
+					NodeStack_clear(saved_brebie);
+					saved_brebie = NULL;
 
 					explored = 6;
 				}

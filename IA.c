@@ -49,7 +49,6 @@ void UpdateNodes(unsigned char* data)
 	{
 		unsigned char* pos = data + startNodePos + i * 18 + totalNameLength;
 		Node* node = malloc(sizeof(Node));
-		node->time = 0;
 
 		memcpy(node, pos, 18);
 

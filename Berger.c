@@ -189,6 +189,9 @@ unsigned char isBrebieFree(Node* brebie)
 		if(distance(GetNodePos(player), GetNodePos(brebie)) < distance(GetNodePos(brebie), GetNodePos(berger)))
 			return 1;
 
+		if(equalsVec2(GetNodePos(player), GetNodePos(berger)))
+			return berger->nodeID > player->nodeID;
+
 		return 0;
 	}
 	return 1;
