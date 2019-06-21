@@ -256,18 +256,6 @@ void Berger(struct lws* wsi)
 			}
 		}
 
-		/*if(distance(GetNodePos(player), RDV) < 150)
-		{
-			Vec2 rdv = getRDVPointPurple();
-
-			if(equalsVec2(GetNodePos(player), rdv))
-				berger_status = WAITING;
-
-			Move(wsi, rdv);
-			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(rdv), 255, 0, 255);
-			return;
-		}*/
-
 		Move(wsi, RDV);
 		drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
 		break;
