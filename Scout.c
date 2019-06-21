@@ -143,7 +143,7 @@ unsigned char checkScoutedHalfMap()
 	}
 
 	y = 3;
-	for(int x=8; x >= 5; x--)
+	for(int x=1; x <= 4; x++)
 	{
 		if(map[y][x] == 0)
 			return 0;
