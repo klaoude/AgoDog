@@ -85,13 +85,19 @@ void updateBrebieStack()
 {
 	Vec2 base; base.x = BASE_X; base.y = BASE_Y;
 	NodeStack* tmp = nodes;
+	Node* berger = NULL;
 	while(tmp != NULL)
 	{
 		if(tmp->node != NULL && strncmp(tmp->node->name, "bot", 3) == 0 && distance(GetNodePos(tmp->node), base) > 900)
-		{
+		{	
 			Node* cpy = malloc(sizeof(Node));
 			memcpy(cpy, tmp->node, sizeof(Node));
-			NodeStack_update(&saved_brebie, cpy);	
+			NodeStack_update(&saved_brebie, cpy);
+
+			if((berger = berger_in_fov()) != NULL && distance(GetNodePos(berger), GetNodePos(tmp->node)) < 250)
+			{
+				NodeStack_UpdatePurpleSent(saved_brebie, tmp->node->nodeID);
+			}	
 		}
 
 		tmp = tmp->next;
@@ -223,10 +229,15 @@ void Scout(struct lws* wsi)
 
 					explored = 6;
 				}
-				Vec2 pos = GetNodePos(player);
+				else
+				{
+					Vec2 pos = GetNodePos(player);
+					Vec2 next = GetNextUnseenRegion(pos);
+					//printf("next [%d, %d]\n", next.x, next.y);
 
-				Vec2 next = GetNextUnseenRegion(pos);
-				Move(wsi, next);
+					if(checkScoutedMap()) explored = 5;
+					else Move(wsi, next);
+				}
 			}
 		}
 
