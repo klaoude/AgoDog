@@ -106,8 +106,8 @@ Vec2 World2Screen(Vec2 pos)
 
 	if(isSpectator == 1)
 	{
-		ret.x = pos.x * WINDOW_WIDTH / 9000;
-		ret.y = pos.y * WINDOW_HEIGTH / 6000;
+		ret.x = WORLD_X != 0 ? pos.x * WINDOW_WIDTH / WORLD_X : pos.x * WINDOW_WIDTH / 9000;
+		ret.y = WORLD_Y != 0 ? pos.y * WINDOW_HEIGTH / WORLD_Y : pos.x * WINDOW_HEIGTH / 6000;
 	}
 	else
 	{
