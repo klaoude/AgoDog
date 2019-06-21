@@ -143,7 +143,7 @@ unsigned char checkScoutedHalfMap()
 	}
 
 	y = 3;
-	for(int x=8; x >= 5; x--)
+	for(int x=1; x <= 4; x++)
 	{
 		if(map[y][x] == 0)
 			return 0;
@@ -207,7 +207,6 @@ void Scout(struct lws* wsi)
 	switch(iaStatus)
 	{
 	case EXPLORE:
-		//printf("cazou yano schwifty : %d \n", explored);
 		if(explored == 5 || explored == 6)
 		{
 			if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
