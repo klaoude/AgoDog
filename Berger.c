@@ -67,8 +67,6 @@ Vec2 process_path()
 	if(sorted_counter < 2)
 		return direction;
 
-	
-
 	direction.x = sorted_path[sorted_counter-2].x - sorted_path[0].x;
 	direction.y = sorted_path[sorted_counter-2].y - sorted_path[0].y;
 
@@ -265,7 +263,10 @@ void Berger(struct lws* wsi)
 
 				direction = process_path();
 
-				berger_status = LOOKING;
+				if(!equalsVec2(direction, RDV))
+					berger_status = LOOKING;
+				else
+					berger_status = GOTO;
 			}
 			else if(target != NULL)
 			{

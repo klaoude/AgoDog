@@ -134,20 +134,17 @@ unsigned char checkScoutedMap()
 
 unsigned char checkScoutedHalfMap()
 {
-	int y = 3;
-	printf("salut cazou\n");
+	int y = 5;
 
-	for(int x=8; x >= 5; x--)
+	for(int x=8; x >= 1; x--)
 	{
-		printf("cazou [%d, %d]  ", x, y);
 		if(map[y][x] == 0)
 			return 0;
 	}
 
-	y = 5;
-	for(int x=8; x >= 1; x--)
+	y = 3;
+	for(int x=8; x >= 5; x--)
 	{
-		//printf("cazou [%d, %d]  ", x, y);
 		if(map[y][x] == 0)
 			return 0;
 	}
@@ -155,6 +152,13 @@ unsigned char checkScoutedHalfMap()
 	
 
 	return 1;
+}
+
+void InitTabMap()
+{
+	for(int y=0; y< WORLD_Y/DIV_SCOUT -1; y++)
+		for(int x=0; x<WORLD_X/DIV_SCOUT -1; x++)
+			map[y][x] = 0;
 }
 
 Vec2 getRDVPointBlue()
@@ -199,24 +203,28 @@ void Scout(struct lws* wsi)
 
 	Node* brebie = NULL;
 	Node* berger = NULL;
-	static unsigned char test =0;
 
 	updateBrebieStack();
 
 	switch(iaStatus)
 	{
 	case EXPLORE:
-		printf("cazou yano schwifty : %d \n", explored);
-		if(explored == 5)
+		//printf("cazou yano schwifty : %d \n", explored);
+		if(explored == 5 || explored == 6)
 		{
 			if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
 			{
 				iaStatus = GOTORDV;
-				//printf("[BOT-Blue] Brebie found !!\n");
 			}
 			else
 			{
-				//checkScoutedMap();
+				if(explored == 5)
+				{
+					InitTabMap();
+					NodeStack_InitPurpleSent(saved_brebie);
+
+					explored = 6;
+				}
 				Vec2 pos = GetNodePos(player);
 
 				Vec2 next = GetNextUnseenRegion(pos);
@@ -226,22 +234,18 @@ void Scout(struct lws* wsi)
 
 		else
 		{
-			//printf("cazou yano schwifty : %d \n", explored);
-			test = checkScoutedHalfMap();
-			printf("Half-map %d \n", test);
-
-			if(test && (explored < 4))
+			if(checkScoutedHalfMap() && (explored < 4) && NodeStack_length(saved_brebie))
 			{
 				iaStatus = GOTORDV;
 				explored ++;
 			}
 
-			if(checkScoutedMap())
+			else if(checkScoutedMap())
 			{
 				iaStatus = GOTORDV;
 				explored = 5;
 			}
-			Move(wsi, GetNextUnseenRegion(GetNodePos(player)));	
+			else Move(wsi, GetNextUnseenRegion(GetNodePos(player)));	
 		}		
 		break;
 	case GOTORDV:
@@ -250,7 +254,6 @@ void Scout(struct lws* wsi)
 			Vec2 rdv = getRDVPointBlue();
 			if(equalsVec2(rdv, GetNodePos(player)) && (berger = isNodeHere(GetNodePos(player))) != NULL)
 			{
-				//debugNode(berger);
 				iaStatus = COMMUNICATING;
 				blue_ticks_start = ticks;
 				printf("[Bot-Blue] Same pos, communication...\n");
