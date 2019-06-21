@@ -6,6 +6,12 @@ int main(int argc, char** argv)
 {
     isUI = 0;
 
+    if(argc < 2)
+    {
+        printf("Usage : ./AgoBot (options) [ip]\n\t-g Enable GUI\n\t-p port[default = 443]\n\t-n nickname [default = spectator]\n");
+        exit(1);
+    }
+
     char* name = "spectator";
     int port = 443;
 
@@ -25,7 +31,7 @@ int main(int argc, char** argv)
             port = atoi(optarg);
             break;
         default:
-            printf("Usage incorrect !\n");
+            printf("Usage : ./AgoBot (options) [ip]\n\t-g Enable GUI\n\t-p port[default = 443]\n\t-n nickname [default = spectator]\n");
             break;
         }
     }
