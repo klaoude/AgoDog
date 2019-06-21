@@ -221,6 +221,7 @@ void Berger(struct lws* wsi)
 	case GOTO:
 		direction.x = direction.y = 0;
 		berger_follow_id = 0;
+
 		if((brebie = brebie_in_fov()) != NULL && isBrebieFree(brebie) && !BrebieinBase(brebie))
 		{
 			direction = GetNodePos(brebie);
@@ -252,8 +253,10 @@ void Berger(struct lws* wsi)
 			berger_ticks = ticks;
 			printf("[Bot-Berger] Same pos as scout %d, start communication...\n", berger_communication_target_id);
 		}
-		if((berger = brebie_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)) && berger->nodeID < player->nodeID)
+
+		if((berger = berger_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)) && berger->nodeID < player->nodeID)
 			berger_status = GOTO;
+
 		break;
 	
 	case LISTEN:
