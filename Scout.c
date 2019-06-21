@@ -207,7 +207,6 @@ void Scout(struct lws* wsi)
 	switch(iaStatus)
 	{
 	case EXPLORE:
-		//printf("cazou yano schwifty : %d \n", explored);
 		if(explored == 5 || explored == 6)
 		{
 			if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
