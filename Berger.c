@@ -337,8 +337,8 @@ void Berger(struct lws* wsi)
 		else
 		{
 			berger_ticks++;
-			if(berger_ticks > 100)
-				berger_status = GOTO;
+			if(berger_ticks > 20)
+				berger_status = LOOKING;
 		}
 		
 
