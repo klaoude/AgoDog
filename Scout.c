@@ -258,32 +258,27 @@ void Scout(struct lws* wsi)
 		}		
 		break;
 	case GOTORDV:
-		if(distance(RDV, GetNodePos(player)) < 450)
+		if(equalsVec2(GetNodePos(player), RDV) && (berger = berger_in_fov()) != NULL && equalsVec2(GetNodePos(player), GetNodePos(berger)))
 		{
-			Vec2 rdv = getRDVPointBlue();
-			if(equalsVec2(rdv, GetNodePos(player)) && (berger = isNodeHere(GetNodePos(player))) != NULL)
-			{
-				iaStatus = COMMUNICATING;
-				blue_ticks_start = ticks;
-				printf("[Bot-Blue] Same pos, communication...\n");
-			}
-			else
-				Move(wsi, rdv);
+			iaStatus = COMMUNICATING;
+			blue_ticks_start = ticks;
 		}
 		else
 			Move(wsi, RDV);
 		break;
 	case COMMUNICATING:
-		//printNodeStack(saved_brebie);
 		brebie = NodeStack_getNearest(saved_brebie, player);
-		//debugNode(brebie);
 		if(ticks - blue_ticks_start >= 2 && brebie != NULL)
 		{
-			if(ticks - blue_ticks_start >= TICKS_LISTEN - 2)
+			if(ticks - blue_ticks_start == TICKS_LISTEN - 2)
 			{
                 printf("[Bot-Blue] Sended direction (%d, %d)\n", brebie->x, brebie->y);
 				NodeStack_UpdatePurpleSent(saved_brebie, brebie->nodeID);
-                iaStatus = EXPLORE;
+				Move(wsi, GetNodePos(player));
+			}
+			else if(ticks - blue_ticks_start >= TICKS_LISTEN + 5)
+			{
+				iaStatus = EXPLORE;
 			}
 			else
 			{
