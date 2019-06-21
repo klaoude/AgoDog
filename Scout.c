@@ -230,6 +230,7 @@ void Scout(struct lws* wsi)
 
 	Node* brebie = NULL;
 	Node* berger = NULL;
+	static char returntoRDV = 0;
 
 	updateBrebieStack();
 
@@ -238,18 +239,20 @@ void Scout(struct lws* wsi)
 	case EXPLORE:
 		if(explored == 5 || explored == 6)
 		{
-			if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0)
+			if(NodeStack_NumberOfPurpleToBeSent(saved_brebie) > 0 && returntoRDV)
 			{
 				iaStatus = GOTORDV;
 			}
 			else
-			{
+			{	
+				if(NodeStack_length(saved_brebie) == 5) returntoRDV = 1;
+				else returntoRDV = 0;
+
 				if(explored == 5)
 				{
 					InitTabMap();
 					NodeStack_clear(saved_brebie);
 					saved_brebie = NULL;
-
 					explored = 6;
 				}
 				else
@@ -258,7 +261,11 @@ void Scout(struct lws* wsi)
 					Vec2 next = GetNextUnseenRegion(pos);
 					//printf("next [%d, %d]\n", next.x, next.y);
 
-					if(checkScoutedMap()) explored = 5;
+					if(checkScoutedMap()) 
+					{
+						explored = 5;
+						returntoRDV = 1;
+					}
 					else Move(wsi, next);
 				}
 			}
@@ -276,6 +283,7 @@ void Scout(struct lws* wsi)
 			{
 				iaStatus = GOTORDV;
 				explored = 5;
+				returntoRDV = 1;
 			}
 			else Move(wsi, GetNextUnseenRegion(GetNodePos(player)));	
 		}		
