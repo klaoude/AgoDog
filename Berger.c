@@ -251,6 +251,8 @@ void Berger(struct lws* wsi)
 			berger_ticks = ticks;
 			printf("[Bot-Berger] Same pos as scout %d, start communication...\n", berger_communication_target_id);
 		}
+		if((berger = brebie_in_fov()) != NULL && equalsVec2(GetNodePos(berger), GetNodePos(player)) && berger->nodeID < player->nodeID)
+			berger_status = GOTO;
 		break;
 	
 	case LISTEN:

@@ -16,12 +16,6 @@
 #define M_PI       3.14159265358979323846
 #endif
 
-typedef struct Vec2
-{
-	int x;
-	int y;
-} Vec2;
-
 typedef struct Vec2f
 {
 	double x;
@@ -35,6 +29,12 @@ typedef enum NODE_TYPE
 	PLAYER
 } NODE_TYPE;
 
+typedef struct Vec2
+{
+	int x;
+	int y;
+} Vec2;
+
 typedef struct Node
 {
 	unsigned int nodeID;
@@ -45,7 +45,6 @@ typedef struct Node
 	unsigned char R,G,B;
 	NODE_TYPE type;
 	unsigned char* name;
-	unsigned int time;
 } Node;
 
 typedef struct NodeStack

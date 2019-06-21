@@ -34,7 +34,6 @@ void InitIA()
 
 void UpdateNodes(unsigned char* data)
 {
-	//NodeStack_clear(nodes);
 	unsigned int totalNameLength = 0;
 	size_t NodeSize = 18; //sizeof(Node) - sizeof(char*)
 
@@ -69,8 +68,6 @@ void UpdateNodes(unsigned char* data)
 		
 		NodeStack_update(&nodes, node);
 
-		//debugNode(node);
-
 		memcpy(&end, data + startNodePos + (i+1)*(NodeSize) + totalNameLength, sizeof(unsigned int)); //la nouvelle fin (check si c'est 0)
 		i++;
 	}
@@ -87,19 +84,13 @@ void UpdateNodes(unsigned char* data)
 		unsigned int nodeID;
 		memcpy(&nodeID, data + new_pos + sizeof(unsigned short) + j * sizeof(unsigned int), sizeof(unsigned int)); //on prend l'id
 		if(player != NULL && nodeID == player->nodeID)
-		{
-			printf("delete player ???\n");
 			player = NULL;
-		}
 		nodes = NodeStack_remove(nodes, nodeID); //on suprime de notre liste
 	}
-
-	//printNodeStack(nodes);
 }
 
 void Move(struct lws *wsi, Vec2 pos)
 {
-	//printf("Moving to %d, %d\n", pos.x, pos.y);
 	unsigned char* packet = malloc(13);
 	memset(packet, 0, 13);
 	*packet = 16;
