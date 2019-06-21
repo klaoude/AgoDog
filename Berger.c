@@ -197,6 +197,24 @@ unsigned char isBrebieFree(Node* brebie)
 	return 1;
 }
 
+Node* getLowestBergerId()
+{
+	NodeStack* tmp = nodes;
+	unsigned int lowID = 9999;
+	Node* ret = NULL;
+	while(tmp != NULL)
+	{
+		if(tmp->node != NULL && strcmp(tmp->node->name, berger_name) == 0 && tmp->node->nodeID < lowID)
+		{
+			ret = tmp->node;
+			lowID = ret->nodeID;
+		}
+		tmp = tmp->next;
+	}
+
+	return ret;
+}
+
 void Berger(struct lws* wsi)
 {
 	if(player == NULL)
@@ -229,7 +247,16 @@ void Berger(struct lws* wsi)
 			return;
 		}
 
-		if(distance(GetNodePos(player), RDV) < 150)
+		if(equalsVec2(GetNodePos(player), RDV))
+		{
+			berger = getLowestBergerId();
+			if(berger == player)
+			{
+				berger_status = WAITING;
+			}
+		}
+
+		/*if(distance(GetNodePos(player), RDV) < 150)
 		{
 			Vec2 rdv = getRDVPointPurple();
 
@@ -239,7 +266,7 @@ void Berger(struct lws* wsi)
 			Move(wsi, rdv);
 			drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(rdv), 255, 0, 255);
 			return;
-		}
+		}*/
 
 		Move(wsi, RDV);
 		drawDebugLine(World2Screen(GetNodePos(player)), World2Screen(RDV), 255, 0, 0);
